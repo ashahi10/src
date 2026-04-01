@@ -20,6 +20,9 @@ export const queryMemorySchema = z.object({
   useSemantic: z.boolean().optional().describe(
     'Allow query-time embedding call when TENGU_MEMORY_EMBED_* is configured (default true).',
   ),
+  fullScan: z.boolean().optional().describe(
+    'Load the entire filtered graph for ranking (slower, strongest recall). Default uses index-bounded candidates when the graph is larger than TENGU_MEMORY_QUERY_FULL_SCAN_MAX_NODES.',
+  ),
 })
 
 export async function handleQueryMemory(args: z.infer<typeof queryMemorySchema>) {
@@ -34,6 +37,7 @@ export async function handleQueryMemory(args: z.infer<typeof queryMemorySchema>)
     intent: args.intent,
     useLexicalIndex: args.useLexicalIndex,
     useSemantic: args.useSemantic,
+    forceFullScan: args.fullScan,
   })
 
   const enriched = results.map(r => ({

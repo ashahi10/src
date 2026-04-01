@@ -4,7 +4,7 @@ import type {
   MemoryQueryResult,
   MemoryScope,
 } from '@tengu/shared-types'
-import { listNodes } from '../graph/node.js'
+import { getNodesByIds, listNodes, listRecentNodeIds } from '../graph/node.js'
 import { isStale } from '../freshness/policy.js'
 import { rankNodes } from './ranker.js'
 import { getDb } from '../graph/store.js'
@@ -12,9 +12,16 @@ import {
   computeLexicalIndexRawScores,
   normalizeScores,
   searchIndexTableExists,
+  countMemoryNodes,
 } from './tokenIndex.js'
 import { queryTermsFromString } from './tokenize.js'
 import { cosineSimilarity, embedText, isEmbeddingsConfigured, loadEmbeddingsForNodes } from './embedding.js'
+import {
+  effectiveIndexHitCap,
+  mergeCandidateNodeIds,
+  parseQueryRetrievalBudget,
+  selectIndexHitNodeIds,
+} from './candidateSelection.js'
 
 export type QueryParams = {
   query: string
@@ -29,19 +36,52 @@ export type QueryParams = {
   useLexicalIndex?: boolean
   /** When false, never calls the embedding API during query. */
   useSemantic?: boolean
+  /** Force loading all nodes (slow); default uses index-bounded candidates on large graphs. */
+  forceFullScan?: boolean
+}
+
+function filterNodesByParams(nodes: MemoryNode[], params: QueryParams): MemoryNode[] {
+  return nodes.filter(n => {
+    if (params.nodeType && n.nodeType !== params.nodeType) return false
+    if (params.sourceScope && n.sourceScope !== params.sourceScope) return false
+    return true
+  })
 }
 
 export async function queryMemory(params: QueryParams): Promise<MemoryQueryResult[]> {
   const db = getDb()
   const queryTerms = queryTermsFromString(params.query)
+  const budget = parseQueryRetrievalBudget()
+  const totalNodes = countMemoryNodes(db)
 
-  let indexNorm: Map<string, number> | undefined
-  if (params.useLexicalIndex !== false && searchIndexTableExists(db) && queryTerms.length > 0) {
-    const raw = computeLexicalIndexRawScores(db, queryTerms)
-    indexNorm = normalizeScores(raw)
+  const indexWanted = params.useLexicalIndex !== false && searchIndexTableExists(db) && queryTerms.length > 0
+  const rawIndex = indexWanted ? computeLexicalIndexRawScores(db, queryTerms) : new Map<string, number>()
+  const indexNorm = indexWanted && rawIndex.size > 0 ? normalizeScores(rawIndex) : undefined
+
+  const limit = params.limit ?? 20
+  const useIndexedCandidates =
+    params.forceFullScan !== true
+    && indexWanted
+    && rawIndex.size > 0
+    && (budget.fullScanMaxNodes === 0 || totalNodes > budget.fullScanMaxNodes)
+
+  let nodes: MemoryNode[]
+  if (!useIndexedCandidates) {
+    nodes = fetchAllNodes(params)
+  } else {
+    const cap = effectiveIndexHitCap(limit, budget.indexCandidateCapFloor)
+    const indexIds = selectIndexHitNodeIds(rawIndex, cap)
+    const recentIds = listRecentNodeIds({
+      nodeType: params.nodeType,
+      sourceScope: params.sourceScope,
+      limit: budget.recentSeedSize,
+    })
+    const mergedIds = mergeCandidateNodeIds(indexIds, recentIds)
+    nodes = filterNodesByParams(getNodesByIds(mergedIds), params)
+    if (nodes.length === 0) {
+      nodes = fetchAllNodes(params)
+    }
   }
-
-  const nodes = fetchAllNodes(params)
 
   const filtered = nodes.filter(node => {
     if (!params.includeStale && isStale(node.freshnessScore)) {
@@ -87,7 +127,6 @@ export async function queryMemory(params: QueryParams): Promise<MemoryQueryResul
     },
   )
 
-  const limit = params.limit ?? 20
   return ranked.slice(0, limit)
 }
 

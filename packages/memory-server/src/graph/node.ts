@@ -162,6 +162,34 @@ export function listNodes(params?: {
   })
 }
 
+/** Recent node ids (for candidate seeding); same filters as `listNodes` but ids only. */
+export function listRecentNodeIds(params: {
+  nodeType?: MemoryNodeType
+  sourceScope?: MemoryScope
+  limit: number
+}): MemoryNodeId[] {
+  const db = getDb()
+  const conditions: string[] = []
+  const values: (string | number)[] = []
+
+  if (params.nodeType) {
+    conditions.push('node_type = ?')
+    values.push(params.nodeType)
+  }
+  if (params.sourceScope) {
+    conditions.push('source_scope = ?')
+    values.push(params.sourceScope)
+  }
+
+  const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
+  const rows = queryAll(
+    db,
+    `SELECT node_id FROM nodes ${where} ORDER BY updated_at DESC LIMIT ?`,
+    [...values, params.limit],
+  )
+  return rows.map(r => r.node_id as MemoryNodeId)
+}
+
 export function getNodesByIds(nodeIds: MemoryNodeId[]): MemoryNode[] {
   if (nodeIds.length === 0) return []
   const db = getDb()

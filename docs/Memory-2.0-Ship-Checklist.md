@@ -45,6 +45,7 @@ CI (when using GitHub Actions): `.github/workflows/memory-server-ci.yml` runs th
 
 - Performance smoke test over 2k nodes passes within practical latency threshold.
 - Retrieval can return matches beyond the first page (no silent 500-node recall ceiling).
+- Large graphs use **bounded candidate retrieval** (BM25 hits + recent seed + full-scan fallback); `memory.query` accepts `fullScan` to force exhaustive load.
 
 ## Documentation Gates
 

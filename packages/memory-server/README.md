@@ -49,6 +49,9 @@ node packages/memory-server/dist/index.js
 | `TENGU_MEMORY_EMBED_URL` | OpenAI-compatible **POST** embeddings endpoint (e.g. `https://api.openai.com/v1/embeddings`) |
 | `TENGU_MEMORY_EMBED_KEY` | Bearer token for that endpoint |
 | `TENGU_MEMORY_EMBED_MODEL` | Embedding model id (default `text-embedding-3-small`) |
+| `TENGU_MEMORY_QUERY_FULL_SCAN_MAX_NODES` | Graphs larger than this use **index-bounded candidates** + recent seed (default `1600`; `0` = always use smart path when the index matches) |
+| `TENGU_MEMORY_QUERY_INDEX_CANDIDATE_CAP` | Floor for max BM25-hit ids per query; effective cap is `max(this, limit×25)` (default `600`) |
+| `TENGU_MEMORY_QUERY_RECENT_SEED` | Union this many most recently updated nodes (after the same type/scope filters) to hedge hot edits (default `200`) |
 
 ## MCP client configuration examples
 
@@ -79,7 +82,7 @@ Use **absolute paths** — hosts often start the server with a cwd that does not
 | Tool | Role |
 |------|------|
 | `memory.create_node` | Create a typed node; returns `{ node, trustPolicy }`; optional `reviewIntervalDays` |
-| `memory.query` | Hybrid ranked search: substring + **portable token index** (BM25-style) + optional **embeddings**; exposes `indexMatchScore` / `semanticMatchScore` when active; optional args `useLexicalIndex` / `useSemantic` |
+| `memory.query` | Hybrid ranked search: substring + **portable token index** (BM25-style) + optional **embeddings**; on large graphs uses **bounded candidates** (top BM25 hits + recent seed, then full-scan fallback if needed). Optional args: `useLexicalIndex`, `useSemantic`, `fullScan` (force exhaustive load) |
 | `memory.add_edge` | Graph edge (`contradicts`, `supports`, …) |
 | `memory.attach_evidence` | Append evidence to a node |
 | `memory.refresh` | Reaffirm / boost freshness; optional `reaffirmationNote` |

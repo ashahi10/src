@@ -51,7 +51,8 @@ export function backfillSearchIndex(database: Database): void {
   stmt.free()
 }
 
-function countNodes(database: Database): number {
+/** Total rows in `nodes` (for retrieval scaling decisions). */
+export function countMemoryNodes(database: Database): number {
   const s = database.prepare('SELECT COUNT(*) as c FROM nodes')
   s.step()
   const row = s.getAsObject() as { c: number }
@@ -77,7 +78,7 @@ export function computeLexicalIndexRawScores(database: Database, queryTokens: st
   const scores = new Map<string, number>()
   if (queryTokens.length === 0) return scores
 
-  const N = Math.max(1, countNodes(database))
+  const N = Math.max(1, countMemoryNodes(database))
   const idfByToken = new Map<string, number>()
   for (const t of queryTokens) {
     const df = documentFrequency(database, t)
