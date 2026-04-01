@@ -24,17 +24,70 @@ const INTENT_WEIGHTS: Record<'general' | 'decision_recall' | 'incident_triage' |
   preference_personalization: { relevance: 0.35, freshness: 0.2, evidence: 0.15, salience: 0.3 },
 }
 
+export type HybridMatchOptions = {
+  /** Normalized BM25-style index scores (0–1), keyed by node id. */
+  indexMatchByNodeId?: Map<string, number>
+  /** Cosine similarity vs query embedding (0–1). */
+  semanticMatchByNodeId?: Map<string, number>
+  /** When true, blend includes the semantic channel (even if many nodes score 0). */
+  useSemanticInBlend?: boolean
+}
+
+function parseEnvWeight(name: string, fallback: number): number {
+  const v = process.env[name]
+  if (v == null || v === '') return fallback
+  const n = Number(v)
+  if (!Number.isFinite(n) || n < 0) return fallback
+  return n
+}
+
+function matchBlendWeights(useSemantic: boolean): { lex: number; idx: number; sem: number } {
+  let lex = parseEnvWeight('TENGU_MEMORY_MATCH_LEXICAL', 0.35)
+  let idx = parseEnvWeight('TENGU_MEMORY_MATCH_INDEX', 0.45)
+  let sem = parseEnvWeight('TENGU_MEMORY_MATCH_SEMANTIC', 0.2)
+  if (!useSemantic) {
+    const total = lex + idx
+    if (total <= 0) return { lex: 0.55, idx: 0.45, sem: 0 }
+    return { lex: lex / total, idx: idx / total, sem: 0 }
+  }
+  const t = lex + idx + sem
+  if (t <= 0) return { lex: 0.35, idx: 0.45, sem: 0.2 }
+  return { lex: lex / t, idx: idx / t, sem: sem / t }
+}
+
 export function rankNodes(
   nodes: MemoryNode[],
   queryTerms: string[],
   weights: Partial<RankingWeights> = {},
   intent: 'general' | 'decision_recall' | 'incident_triage' | 'preference_personalization' = 'general',
+  hybrid?: HybridMatchOptions,
 ): MemoryQueryResult[] {
   const w = { ...INTENT_WEIGHTS[intent], ...weights }
   const nodeById = new Map(nodes.map(n => [n.nodeId, n]))
+  const useSemantic = Boolean(hybrid?.useSemanticInBlend && hybrid.semanticMatchByNodeId)
+  const blend = matchBlendWeights(useSemantic)
+  const indexActive = Boolean(hybrid?.indexMatchByNodeId != null && queryTerms.length > 0)
+
+  let wLex = blend.lex
+  let wIdx = indexActive ? blend.idx : 0
+  let wSem = useSemantic ? blend.sem : 0
+  let sumChannels = wLex + wIdx + wSem
+  if (sumChannels <= 0) {
+    wLex = 1
+    wIdx = 0
+    wSem = 0
+    sumChannels = 1
+  }
+  const nLex = wLex / sumChannels
+  const nIdx = wIdx / sumChannels
+  const nSem = wSem / sumChannels
 
   const results: MemoryQueryResult[] = nodes.map(node => {
-    const matchScore = computeMatchScore(node, queryTerms)
+    const substringScore = computeMatchScore(node, queryTerms)
+    const idxScore = hybrid?.indexMatchByNodeId?.get(node.nodeId) ?? 0
+    const semScore = hybrid?.semanticMatchByNodeId?.get(node.nodeId) ?? 0
+    const matchScore = nLex * substringScore + nIdx * idxScore + nSem * semScore
+
     const edges = getEdgesForNode(node.nodeId)
     const conflict = computeConflict(node, edges, nodeById)
     const evidenceQualityScore = computeEvidenceQualityScore(node, conflict.hasConflict)
@@ -47,7 +100,7 @@ export function rankNodes(
       + evidenceStrength * w.evidence
       + salienceScore * w.salience
 
-    return {
+    const out: MemoryQueryResult = {
       node,
       matchScore,
       compositeScore,
@@ -58,6 +111,9 @@ export function rankNodes(
       conflict,
       edges,
     }
+    if (indexActive) out.indexMatchScore = idxScore
+    if (useSemantic) out.semanticMatchScore = semScore
+    return out
   })
 
   results.sort((a, b) => b.compositeScore - a.compositeScore)

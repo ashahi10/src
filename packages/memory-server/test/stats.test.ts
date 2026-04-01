@@ -20,8 +20,8 @@ describe('memory.stats', () => {
   })
 
   it('returns accurate counts and highConfidenceWithoutEvidenceCount', () => {
-    createNode({ nodeType: 'preference', content: 'a', sourceScope: 'session' })
-    createNode({ nodeType: 'incident', content: 'b', sourceScope: 'project' })
+    createNode({ nodeType: 'preference', content: 'alpha preference', sourceScope: 'session' })
+    createNode({ nodeType: 'incident', content: 'beta incident', sourceScope: 'project' })
 
     const stats = JSON.parse(handleGetStats().content[0].text) as {
       totalNodes: number
@@ -33,5 +33,11 @@ describe('memory.stats', () => {
     expect(stats.nodesByType.preference).toBe(1)
     expect(stats.nodesByType.incident).toBe(1)
     expect(stats.highConfidenceWithoutEvidenceCount).toBe(0)
+    expect(
+      (stats as { lexicalIndexRowCount?: number }).lexicalIndexRowCount,
+    ).toBeGreaterThan(0)
+    expect(
+      (stats as { embeddedNodeCount?: number }).embeddedNodeCount,
+    ).toBe(0)
   })
 })

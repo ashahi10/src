@@ -7,6 +7,14 @@ import type {
 import { listNodes } from '../graph/node.js'
 import { isStale } from '../freshness/policy.js'
 import { rankNodes } from './ranker.js'
+import { getDb } from '../graph/store.js'
+import {
+  computeLexicalIndexRawScores,
+  normalizeScores,
+  searchIndexTableExists,
+} from './tokenIndex.js'
+import { queryTermsFromString } from './tokenize.js'
+import { cosineSimilarity, embedText, isEmbeddingsConfigured, loadEmbeddingsForNodes } from './embedding.js'
 
 export type QueryParams = {
   query: string
@@ -17,9 +25,22 @@ export type QueryParams = {
   minFreshness?: number
   minConfidence?: number
   intent?: 'general' | 'decision_recall' | 'incident_triage' | 'preference_personalization'
+  /** When false, skip BM25-style token index (substring + optional semantic only). */
+  useLexicalIndex?: boolean
+  /** When false, never calls the embedding API during query. */
+  useSemantic?: boolean
 }
 
-export function queryMemory(params: QueryParams): MemoryQueryResult[] {
+export async function queryMemory(params: QueryParams): Promise<MemoryQueryResult[]> {
+  const db = getDb()
+  const queryTerms = queryTermsFromString(params.query)
+
+  let indexNorm: Map<string, number> | undefined
+  if (params.useLexicalIndex !== false && searchIndexTableExists(db) && queryTerms.length > 0) {
+    const raw = computeLexicalIndexRawScores(db, queryTerms)
+    indexNorm = normalizeScores(raw)
+  }
+
   const nodes = fetchAllNodes(params)
 
   const filtered = nodes.filter(node => {
@@ -35,11 +56,36 @@ export function queryMemory(params: QueryParams): MemoryQueryResult[] {
     return true
   })
 
-  const queryTerms = params.query
-    .split(/\s+/)
-    .filter(t => t.length > 1)
+  let semanticByNode: Map<string, number> | undefined
+  let useSemanticInBlend = false
+  if (params.useSemantic !== false && isEmbeddingsConfigured()) {
+    try {
+      const qEmb = await embedText(params.query)
+      if (qEmb) {
+        semanticByNode = new Map()
+        const embMap = loadEmbeddingsForNodes(filtered.map(n => n.nodeId))
+        for (const n of filtered) {
+          const v = embMap.get(n.nodeId)
+          semanticByNode.set(n.nodeId, v ? cosineSimilarity(qEmb, v) : 0)
+        }
+        useSemanticInBlend = true
+      }
+    } catch {
+      // Network / API errors: degrade to lexical + index only
+    }
+  }
 
-  const ranked = rankNodes(filtered, queryTerms, {}, params.intent ?? 'general')
+  const ranked = rankNodes(
+    filtered,
+    queryTerms,
+    {},
+    params.intent ?? 'general',
+    {
+      indexMatchByNodeId: indexNorm,
+      semanticMatchByNodeId: semanticByNode,
+      useSemanticInBlend,
+    },
+  )
 
   const limit = params.limit ?? 20
   return ranked.slice(0, limit)

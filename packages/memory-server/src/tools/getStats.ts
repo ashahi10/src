@@ -44,6 +44,13 @@ export function handleGetStats() {
   const avgConfidence =
     totalNodes > 0 ? Number(firstRow(db, 'SELECT AVG(confidence) as avg FROM nodes')?.avg ?? 0) : 0
 
+  const lexicalIndexRowCount = Number(
+    firstRow(db, 'SELECT COUNT(*) as count FROM node_search_tokens')?.count ?? 0,
+  )
+  const embeddedNodeCount = Number(
+    firstRow(db, 'SELECT COUNT(*) as count FROM node_embeddings')?.count ?? 0,
+  )
+
   const stats: MemoryStats = {
     totalNodes,
     totalEdges,
@@ -54,6 +61,8 @@ export function handleGetStats() {
     staleNodeCount: getStaleNodeIds().length,
     contradictionCount: getContradictionPairs().length,
     highConfidenceWithoutEvidenceCount: countHighConfidenceWithoutEvidence(),
+    lexicalIndexRowCount,
+    embeddedNodeCount,
   }
 
   return {

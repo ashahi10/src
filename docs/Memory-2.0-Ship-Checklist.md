@@ -4,13 +4,16 @@
 
 - `memory.create_node` enforces trust policy for high confidence without evidence.
 - `memory.query` returns ranked results with provenance fields:
-  - `matchScore`
+  - `matchScore` (hybrid lexical + optional index + optional semantic)
+  - `indexMatchScore` / `semanticMatchScore` when those channels are active
   - `compositeScore`
   - `evidenceQualityScore`
   - `salienceScore`
   - `conflict`
 - `memory.refresh` records reaffirmation metadata.
-- `memory.stats` includes `highConfidenceWithoutEvidenceCount`.
+- `memory.list_review_queue` / `memory.verify_node` implement spaced verification on `next_review_at`.
+- `memory.embed_node` + `TENGU_MEMORY_EMBED_*` enable optional embedding channel in `memory.query`.
+- `memory.stats` includes `highConfidenceWithoutEvidenceCount`, `lexicalIndexRowCount`, `embeddedNodeCount`.
 
 ## Reliability Gates
 

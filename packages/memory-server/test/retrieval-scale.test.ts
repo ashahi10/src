@@ -19,7 +19,7 @@ describe('retrieval scale and recall', () => {
     removeFile(dbPath)
   })
 
-  it('retrieves matches beyond the first 500 nodes', () => {
+  it('retrieves matches beyond the first 500 nodes', async () => {
     for (let i = 0; i < 620; i++) {
       createNode({
         nodeType: 'general',
@@ -34,7 +34,7 @@ describe('retrieval scale and recall', () => {
       sourceScope: 'project',
     })
 
-    const results = queryMemory({
+    const results = await queryMemory({
       query: 'critical-late-token',
       includeStale: true,
       limit: 50,

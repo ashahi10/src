@@ -2,6 +2,7 @@ import initSqlJs, { type Database } from 'sql.js'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs'
+import { backfillSearchIndex } from '../retrieval/tokenIndex.js'
 
 /**
  * Persistence uses sql.js (WASM SQLite) so the server runs without native addons.
@@ -113,7 +114,84 @@ function initSchema(database: Database): void {
   database.run('CREATE INDEX IF NOT EXISTS idx_edges_to ON edges(to_node_id)')
   database.run('CREATE INDEX IF NOT EXISTS idx_evidence_node ON evidence_refs(node_id)')
   database.run('PRAGMA foreign_keys = ON')
+  runMigrations(database)
   saveDb()
+}
+
+function readUserVersion(database: Database): number {
+  const stmt = database.prepare('PRAGMA user_version')
+  stmt.step()
+  const row = stmt.getAsObject() as { user_version?: number }
+  stmt.free()
+  return Number(row.user_version ?? 0)
+}
+
+function setUserVersion(database: Database, v: number): void {
+  database.run(`PRAGMA user_version = ${v}`)
+}
+
+function tableColumns(database: Database, table: string): Set<string> {
+  const cols = new Set<string>()
+  const stmt = database.prepare(`PRAGMA table_info(${table})`)
+  while (stmt.step()) {
+    const row = stmt.getAsObject() as { name?: string }
+    if (row.name) cols.add(row.name)
+  }
+  stmt.free()
+  return cols
+}
+
+function runMigrations(database: Database): void {
+  let v = readUserVersion(database)
+
+  if (v < 1) {
+    const cols = tableColumns(database, 'nodes')
+    if (!cols.has('review_interval_ms')) {
+      database.run(
+        'ALTER TABLE nodes ADD COLUMN review_interval_ms INTEGER NOT NULL DEFAULT 604800000',
+      )
+    }
+    if (!cols.has('next_review_at')) {
+      database.run('ALTER TABLE nodes ADD COLUMN next_review_at INTEGER')
+    }
+    if (!cols.has('last_verified_at')) {
+      database.run('ALTER TABLE nodes ADD COLUMN last_verified_at INTEGER')
+    }
+    database.run(
+      `UPDATE nodes SET next_review_at = updated_at + COALESCE(review_interval_ms, 604800000)
+       WHERE next_review_at IS NULL`,
+    )
+    v = 1
+    setUserVersion(database, v)
+  }
+
+  if (v < 2) {
+    database.run(`
+      CREATE TABLE IF NOT EXISTS node_search_tokens (
+        token TEXT NOT NULL,
+        node_id TEXT NOT NULL,
+        tf REAL NOT NULL,
+        PRIMARY KEY (token, node_id),
+        FOREIGN KEY (node_id) REFERENCES nodes(node_id) ON DELETE CASCADE
+      )
+    `)
+    database.run(
+      'CREATE INDEX IF NOT EXISTS idx_node_search_tokens_token ON node_search_tokens(token)',
+    )
+    database.run(`
+      CREATE TABLE IF NOT EXISTS node_embeddings (
+        node_id TEXT PRIMARY KEY,
+        model TEXT NOT NULL,
+        dims INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
+        vector BLOB NOT NULL,
+        FOREIGN KEY (node_id) REFERENCES nodes(node_id) ON DELETE CASCADE
+      )
+    `)
+    backfillSearchIndex(database)
+    v = 2
+    setUserVersion(database, v)
+  }
 }
 
 export function closeDb(): void {

@@ -36,7 +36,7 @@ describe('handler contract stability', () => {
     expect(typeof body.trustPolicy.confidenceCappedForMissingEvidence).toBe('boolean')
   })
 
-  it('query returns enriched ranking fields including conflict/salience/evidenceQuality', () => {
+  it('query returns enriched ranking fields including conflict/salience/evidenceQuality', async () => {
     handleCreateNode({
       nodeType: 'architecture_decision',
       content: 'contract query decision',
@@ -45,7 +45,7 @@ describe('handler contract stability', () => {
       tags: ['decision', 'critical'],
     })
 
-    const res = handleQueryMemory({
+    const res = await handleQueryMemory({
       query: 'contract query decision',
       intent: 'decision_recall',
       includeStale: true,

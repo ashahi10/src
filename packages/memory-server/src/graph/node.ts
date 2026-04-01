@@ -9,6 +9,9 @@ import type {
 import { HIGH_CONFIDENCE_MIN, MAX_CONFIDENCE_WITHOUT_EVIDENCE } from '../trustPolicy.js'
 import { computeDecayedFreshness } from '../freshness/scorer.js'
 import { getDb, scheduleSave } from './store.js'
+import { replaceSearchIndexForNode, searchIndexTableExists } from '../retrieval/tokenIndex.js'
+
+const DEFAULT_REVIEW_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000
 
 export function createNode(params: {
   nodeType: MemoryNodeType
@@ -18,6 +21,8 @@ export function createNode(params: {
   tags?: string[]
   metadata?: Record<string, unknown>
   evidenceRefs?: EvidenceRef[]
+  /** Spaced verification interval (ms); default 7 days. */
+  reviewIntervalMs?: number
 }): MemoryNode {
   const db = getDb()
   const now = Date.now()
@@ -29,9 +34,14 @@ export function createNode(params: {
     confidence = MAX_CONFIDENCE_WITHOUT_EVIDENCE
   }
 
+  const reviewIntervalMs = params.reviewIntervalMs ?? DEFAULT_REVIEW_INTERVAL_MS
+  const nextReviewAt = now + reviewIntervalMs
+  const tagsJson = JSON.stringify(params.tags ?? [])
+
   db.run(
-    `INSERT INTO nodes (node_id, node_type, content, confidence, freshness_score, created_at, updated_at, source_scope, tags, metadata)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO nodes (node_id, node_type, content, confidence, freshness_score, created_at, updated_at, source_scope, tags, metadata,
+      review_interval_ms, next_review_at, last_verified_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)`,
     [
       nodeId,
       params.nodeType,
@@ -41,10 +51,16 @@ export function createNode(params: {
       now,
       now,
       params.sourceScope ?? 'session',
-      JSON.stringify(params.tags ?? []),
+      tagsJson,
       JSON.stringify(params.metadata ?? {}),
+      reviewIntervalMs,
+      nextReviewAt,
     ],
   )
+
+  if (searchIndexTableExists(db)) {
+    replaceSearchIndexForNode(db, nodeId, params.content, tagsJson)
+  }
 
   if (params.evidenceRefs?.length) {
     for (const ref of params.evidenceRefs) {
@@ -95,7 +111,11 @@ export function updateNodeContent(nodeId: MemoryNodeId, content: string): Memory
   const now = Date.now()
   db.run('UPDATE nodes SET content = ?, updated_at = ? WHERE node_id = ?', [content, now, nodeId])
   scheduleSave()
-  return getNode(nodeId)
+  const node = getNode(nodeId)
+  if (node && searchIndexTableExists(db)) {
+    replaceSearchIndexForNode(db, nodeId, content, JSON.stringify(node.tags))
+  }
+  return node
 }
 
 export function deleteNode(nodeId: MemoryNodeId): boolean {
@@ -142,6 +162,23 @@ export function listNodes(params?: {
   })
 }
 
+export function getNodesByIds(nodeIds: MemoryNodeId[]): MemoryNode[] {
+  if (nodeIds.length === 0) return []
+  const db = getDb()
+  const out: MemoryNode[] = []
+  const chunkSize = 80
+  for (let i = 0; i < nodeIds.length; i += chunkSize) {
+    const chunk = nodeIds.slice(i, i + chunkSize)
+    const ph = chunk.map(() => '?').join(',')
+    const rows = queryAll(db, `SELECT * FROM nodes WHERE node_id IN (${ph})`, chunk as unknown as string[])
+    for (const row of rows) {
+      const evidenceRows = queryAll(db, 'SELECT * FROM evidence_refs WHERE node_id = ?', [row.node_id as string])
+      out.push(rowToNode(row, evidenceRows))
+    }
+  }
+  return out
+}
+
 function queryAll(db: ReturnType<typeof getDb>, sql: string, params: unknown[] = []): Record<string, unknown>[] {
   const results: Record<string, unknown>[] = []
   const stmt = db.prepare(sql)
@@ -154,6 +191,10 @@ function queryAll(db: ReturnType<typeof getDb>, sql: string, params: unknown[] =
 }
 
 function rowToNode(row: Record<string, unknown>, evidenceRows: Record<string, unknown>[]): MemoryNode {
+  const reviewIntervalRaw = row.review_interval_ms
+  const nextReviewRaw = row.next_review_at
+  const lastVerifiedRaw = row.last_verified_at
+
   return {
     nodeId: row.node_id as MemoryNodeId,
     nodeType: row.node_type as MemoryNodeType,
@@ -171,5 +212,8 @@ function rowToNode(row: Record<string, unknown>, evidenceRows: Record<string, un
       label: (e.label as string) ?? undefined,
       timestamp: (e.timestamp as number) ?? undefined,
     })),
+    reviewIntervalMs: reviewIntervalRaw != null ? Number(reviewIntervalRaw) : undefined,
+    nextReviewAt: nextReviewRaw != null ? Number(nextReviewRaw) : null,
+    lastVerifiedAt: lastVerifiedRaw != null ? Number(lastVerifiedRaw) : null,
   }
 }

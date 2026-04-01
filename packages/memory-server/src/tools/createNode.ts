@@ -18,11 +18,18 @@ export const createNodeSchema = z.object({
     label: z.string().optional(),
     timestamp: z.number().int().optional(),
   })).optional().describe('Evidence references backing this memory'),
+  reviewIntervalDays: z.number().min(1).max(365).optional().describe(
+    'Days until first scheduled verification (spaced review); default 7.',
+  ),
 })
 
 export function handleCreateNode(args: z.infer<typeof createNodeSchema>) {
   const requestedConfidence = args.confidence ?? 0.5
   const hadEvidence = Boolean(args.evidenceRefs?.length)
+
+  const reviewIntervalMs = args.reviewIntervalDays != null
+    ? args.reviewIntervalDays * 24 * 60 * 60 * 1000
+    : undefined
 
   const node = createNode({
     nodeType: args.nodeType,
@@ -32,6 +39,7 @@ export function handleCreateNode(args: z.infer<typeof createNodeSchema>) {
     tags: args.tags,
     metadata: args.metadata,
     evidenceRefs: args.evidenceRefs,
+    reviewIntervalMs,
   })
 
   const confidenceCappedForMissingEvidence =

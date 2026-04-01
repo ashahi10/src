@@ -86,6 +86,9 @@ describe('MCP stdio (production wire path)', { timeout: 45_000 }, () => {
       'memory.attach_evidence',
       'memory.refresh',
       'memory.stats',
+      'memory.list_review_queue',
+      'memory.verify_node',
+      'memory.embed_node',
     ]) {
       expect(names.has(n), `missing tool ${n}`).toBe(true)
     }

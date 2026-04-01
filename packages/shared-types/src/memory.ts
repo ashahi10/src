@@ -40,6 +40,12 @@ export type MemoryNode = {
   sourceScope: MemoryScope
   tags: string[]
   metadata: Record<string, unknown>
+  /** Spaced verification: interval between reviews (ms). */
+  reviewIntervalMs?: number
+  /** When this node is due for human/agent verification (ms since epoch). */
+  nextReviewAt?: Timestamp | null
+  /** Last successful verification timestamp (ms), if any. */
+  lastVerifiedAt?: Timestamp | null
 }
 
 export type MemoryEdge = {
@@ -53,8 +59,18 @@ export type MemoryEdge = {
 
 export type MemoryQueryResult = {
   node: MemoryNode
-  /** Overlap between query terms and node content/tags (0–1). */
+  /**
+   * Primary lexical relevance (0–1): substring overlap with optional hybrid blend of
+   * `indexMatchScore` / `semanticMatchScore` when those subsystems are active.
+   */
   matchScore: number
+  /**
+   * BM25-style lexical index score from persisted token index (0–1), when enabled.
+   * sql.js builds omit SQLite FTS5; this approximates inverted-index retrieval.
+   */
+  indexMatchScore?: number
+  /** Cosine similarity vs query embedding when `memory.embed_node` + embed API are configured (0–1). */
+  semanticMatchScore?: number
   /**
    * Ranking score per RFC §8: matchScore·w_r + freshness·w_f + evidenceStrength·w_e
    * (default weights: 0.35 / 0.35 / 0.30).
@@ -84,6 +100,10 @@ export type MemoryStats = {
   contradictionCount: number
   /** RFC §6.3 / §10: nodes with confidence ≥ 0.7 but no evidence rows (should be 0 with enforced writes). */
   highConfidenceWithoutEvidenceCount: number
+  /** Rows in the portable lexical token index (BM25-style retrieval). */
+  lexicalIndexRowCount?: number
+  /** Nodes with at least one stored embedding vector. */
+  embeddedNodeCount?: number
 }
 
 export type FreshnessConfig = {

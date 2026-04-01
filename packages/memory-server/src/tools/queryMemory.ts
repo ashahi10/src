@@ -14,10 +14,16 @@ export const queryMemorySchema = z.object({
   intent: z.enum(['general', 'decision_recall', 'incident_triage', 'preference_personalization'])
     .optional()
     .describe('Retrieval profile for weighting and ranking behavior'),
+  useLexicalIndex: z.boolean().optional().describe(
+    'Include BM25-style portable token index in hybrid rank (default true when index exists).',
+  ),
+  useSemantic: z.boolean().optional().describe(
+    'Allow query-time embedding call when TENGU_MEMORY_EMBED_* is configured (default true).',
+  ),
 })
 
-export function handleQueryMemory(args: z.infer<typeof queryMemorySchema>) {
-  const results = queryMemory({
+export async function handleQueryMemory(args: z.infer<typeof queryMemorySchema>) {
+  const results = await queryMemory({
     query: args.query,
     nodeType: args.nodeType,
     sourceScope: args.sourceScope,
@@ -26,6 +32,8 @@ export function handleQueryMemory(args: z.infer<typeof queryMemorySchema>) {
     minFreshness: args.minFreshness,
     minConfidence: args.minConfidence,
     intent: args.intent,
+    useLexicalIndex: args.useLexicalIndex,
+    useSemantic: args.useSemantic,
   })
 
   const enriched = results.map(r => ({

@@ -84,7 +84,7 @@ const attach = parseJsonFromHandler(
 const ev = attach.evidence as unknown[]
 assert(Array.isArray(ev) && ev.length >= 1, 'attach evidence')
 
-const q = parseJsonFromHandler(handleQueryMemory({ query: 'billing datastore', limit: 10 }))
+const q = parseJsonFromHandler(await handleQueryMemory({ query: 'billing datastore', limit: 10 }))
 assert(Number(q.count) >= 2, `query should return both nodes, got ${String(q.count)}`)
 const results = q.results as Array<{ flags?: { contradicted?: boolean }; compositeScore?: number }>
 const withFlags = results.filter(r => r.flags?.contradicted)

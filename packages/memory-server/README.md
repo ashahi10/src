@@ -43,6 +43,12 @@ node packages/memory-server/dist/index.js
 |----------|---------|
 | `TENGU_MEMORY_DB` | Path to the SQLite file (default: `~/.tengu/memory.db`) |
 | `TENGU_MEMORY_SYNC_WRITES=1` | Flush to disk immediately after writes (stronger durability, slower) |
+| `TENGU_MEMORY_MATCH_LEXICAL` | Weight for substring overlap in hybrid `matchScore` (default `0.35`; renormalized with index/semantic) |
+| `TENGU_MEMORY_MATCH_INDEX` | Weight for BM25-style token index (default `0.45`) |
+| `TENGU_MEMORY_MATCH_SEMANTIC` | Weight for embedding cosine channel when enabled (default `0.2`) |
+| `TENGU_MEMORY_EMBED_URL` | OpenAI-compatible **POST** embeddings endpoint (e.g. `https://api.openai.com/v1/embeddings`) |
+| `TENGU_MEMORY_EMBED_KEY` | Bearer token for that endpoint |
+| `TENGU_MEMORY_EMBED_MODEL` | Embedding model id (default `text-embedding-3-small`) |
 
 ## MCP client configuration examples
 
@@ -72,12 +78,15 @@ Use **absolute paths** — hosts often start the server with a cwd that does not
 
 | Tool | Role |
 |------|------|
-| `memory.create_node` | Create a typed node; returns `{ node, trustPolicy }` |
-| `memory.query` | Ranked search with `matchScore`, `compositeScore`, `evidenceQualityScore`, `salienceScore`, `conflict` |
+| `memory.create_node` | Create a typed node; returns `{ node, trustPolicy }`; optional `reviewIntervalDays` |
+| `memory.query` | Hybrid ranked search: substring + **portable token index** (BM25-style) + optional **embeddings**; exposes `indexMatchScore` / `semanticMatchScore` when active; optional args `useLexicalIndex` / `useSemantic` |
 | `memory.add_edge` | Graph edge (`contradicts`, `supports`, …) |
 | `memory.attach_evidence` | Append evidence to a node |
 | `memory.refresh` | Reaffirm / boost freshness; optional `reaffirmationNote` |
-| `memory.stats` | Aggregate stats |
+| `memory.list_review_queue` | Spaced verification queue (`next_review_at`), overdue or full upcoming list |
+| `memory.verify_node` | Confirm a memory still holds: doubles review interval (capped), reschedules, boosts freshness |
+| `memory.embed_node` | Fetch and store an embedding for a node (requires `TENGU_MEMORY_EMBED_*`) |
+| `memory.stats` | Aggregate stats (+ `lexicalIndexRowCount`, `embeddedNodeCount`) |
 
 ## Resources
 
@@ -88,7 +97,7 @@ Use **absolute paths** — hosts often start the server with a cwd that does not
 
 ## Why SQLite (and not “only vectors”)?
 
-SQLite gives you **durable, queryable structure** for a **knowledge graph** (nodes, edges, evidence rows) with **predictable behavior** and no extra services. **Semantic / vector search** is complementary: it helps fuzzy recall, but it is weaker alone for **auditable** memory (evidence links, contradiction edges, typed scopes). A common advanced architecture is **SQLite as source of truth + optional embedding index** for hybrid retrieval — see `docs/Memory-2.0-Architecture-SQL-vs-Semantic.md` in this repo.
+SQLite gives you **durable, queryable structure** for a **knowledge graph** (nodes, edges, evidence rows) with **predictable behavior** and no extra services. The default runtime uses **sql.js** (WASM SQLite), which is built **without SQLite FTS5**; this server ships a maintained **`node_search_tokens` inverted index** plus BM25-style scoring instead, then **blends** with substring match and (optionally) stored embeddings. **Semantic / vector search** is complementary: call `memory.embed_node` when `TENGU_MEMORY_EMBED_URL` / `TENGU_MEMORY_EMBED_KEY` are set so `memory.query` can add a cosine channel. See `docs/Memory-2.0-Architecture-SQL-vs-Semantic.md` in this repo.
 
 ## Related docs
 

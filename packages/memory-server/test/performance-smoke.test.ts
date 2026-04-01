@@ -19,7 +19,7 @@ describe('performance smoke', () => {
     removeFile(dbPath)
   })
 
-  it('queries 2k memories within a practical latency budget', () => {
+  it('queries 2k memories within a practical latency budget', async () => {
     for (let i = 0; i < 2000; i++) {
       createNode({
         nodeType: i % 11 === 0 ? 'incident' : 'general',
@@ -30,7 +30,7 @@ describe('performance smoke', () => {
     }
 
     const start = Date.now()
-    const results = queryMemory({
+    const results = await queryMemory({
       query: 'keyword-7',
       includeStale: true,
       intent: 'incident_triage',

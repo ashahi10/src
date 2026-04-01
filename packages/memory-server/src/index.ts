@@ -8,6 +8,9 @@ import { addEdgeSchema, handleAddEdge } from './tools/addEdge.js'
 import { attachEvidenceSchema, handleAttachEvidence } from './tools/attachEvidence.js'
 import { refreshNodeSchema, handleRefreshNode } from './tools/refreshNode.js'
 import { handleGetStats } from './tools/getStats.js'
+import { listReviewQueueSchema, handleListReviewQueue } from './tools/listReviewQueue.js'
+import { verifyNodeToolSchema, handleVerifyNode } from './tools/verifyNode.js'
+import { embedNodeSchema, handleEmbedNode } from './tools/embedNode.js'
 import { getNode } from './graph/node.js'
 import { getEdgesForNode } from './graph/edge.js'
 import { initDb, closeDb } from './graph/store.js'
@@ -26,7 +29,7 @@ server.tool(
 
 server.tool(
   'memory.query',
-  'Retrieve ranked memory nodes by relevance, freshness, and evidence strength',
+  'Retrieve ranked memory nodes by hybrid lexical (substring + BM25-style token index) and optional embeddings, plus freshness and evidence strength',
   queryMemorySchema.shape,
   async (args) => handleQueryMemory(args),
 )
@@ -57,6 +60,27 @@ server.tool(
   'Get memory graph statistics: node counts by type/scope, freshness distribution, contradictions',
   {},
   async () => handleGetStats(),
+)
+
+server.tool(
+  'memory.list_review_queue',
+  'List memory nodes scheduled for spaced verification (next_review_at), overdue or full upcoming queue',
+  listReviewQueueSchema.shape,
+  async (args) => handleListReviewQueue(args),
+)
+
+server.tool(
+  'memory.verify_node',
+  'Mark a memory as verified: doubles review interval (capped), schedules next_review_at, boosts freshness',
+  verifyNodeToolSchema.shape,
+  async (args) => handleVerifyNode(args),
+)
+
+server.tool(
+  'memory.embed_node',
+  'Store an embedding vector for a node (requires TENGU_MEMORY_EMBED_URL + TENGU_MEMORY_EMBED_KEY); enables semantic channel in memory.query',
+  embedNodeSchema.shape,
+  async (args) => handleEmbedNode(args),
 )
 
 server.registerResource(

@@ -30,8 +30,8 @@ describe('query memory', () => {
     removeFile(dbPath)
   })
 
-  it('applies minFreshness even when includeStale is true', () => {
-    const low = queryMemory({
+  it('applies minFreshness even when includeStale is true', async () => {
+    const low = await queryMemory({
       query: 'keyword',
       includeStale: true,
       minFreshness: 1.01,
@@ -40,8 +40,8 @@ describe('query memory', () => {
     expect(low.length).toBe(0)
   })
 
-  it('returns matchScore and compositeScore for ranking', () => {
-    const results = queryMemory({ query: 'alpha', limit: 10 })
+  it('returns matchScore and compositeScore for ranking', async () => {
+    const results = await queryMemory({ query: 'alpha', limit: 10 })
     expect(results.length).toBeGreaterThanOrEqual(1)
     const alpha = results.find(r => r.node.content.startsWith('alpha'))
     expect(alpha).toBeDefined()
@@ -51,14 +51,14 @@ describe('query memory', () => {
     expect(typeof alpha!.evidenceStrength).toBe('number')
   })
 
-  it('orders by compositeScore descending', () => {
-    const results = queryMemory({ query: 'keyword', limit: 10 })
+  it('orders by compositeScore descending', async () => {
+    const results = await queryMemory({ query: 'keyword', limit: 10 })
     for (let i = 1; i < results.length; i++) {
       expect(results[i - 1]!.compositeScore).toBeGreaterThanOrEqual(results[i]!.compositeScore)
     }
   })
 
-  it('supports intent-aware ranking and conflict metadata', () => {
+  it('supports intent-aware ranking and conflict metadata', async () => {
     const decision = createNode({
       nodeType: 'architecture_decision',
       content: 'use event sourcing in billing',
@@ -74,14 +74,14 @@ describe('query memory', () => {
       evidenceRefs: [{ type: 'transcript', uri: 'transcript://meeting' }],
     })
 
-    const results = queryMemory({ query: 'event sourcing', intent: 'decision_recall', includeStale: true })
+    const results = await queryMemory({ query: 'event sourcing', intent: 'decision_recall', includeStale: true })
     expect(results.length).toBeGreaterThan(0)
     expect(results[0]!.evidenceQualityScore).toBeGreaterThanOrEqual(0)
     expect(results[0]!.salienceScore).toBeGreaterThanOrEqual(0)
     expect(results[0]!.conflict).toBeDefined()
   })
 
-  it('excludes stale nodes by default when includeStale is false', () => {
+  it('excludes stale nodes by default when includeStale is false', async () => {
     const staleNode = createNode({
       nodeType: 'general',
       content: 'very old stale fact',
@@ -92,7 +92,7 @@ describe('query memory', () => {
     const db = getDb()
     db.run('UPDATE nodes SET updated_at = ? WHERE node_id = ?', [oldTs, staleNode.nodeId])
 
-    const freshOnly = queryMemory({ query: 'stale fact', includeStale: false })
+    const freshOnly = await queryMemory({ query: 'stale fact', includeStale: false })
     expect(freshOnly.some(r => r.node.nodeId === staleNode.nodeId)).toBe(false)
   })
 })
