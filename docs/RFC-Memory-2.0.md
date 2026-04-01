@@ -1,212 +1,110 @@
 # RFC: System-Aware Memory 2.0
 
-Status: Proposed (implementation-ready spec)  
-Owner: Memory / Context Systems  
-Target Phase: Phase 4  
-Related: E (System-Aware Memory 2.0), G-005
+Status: Approved  
+Package: `@tengu/memory-server`  
+Type: MCP Server (stdio transport)
 
 ## 1) Objective
 
-Evolve current memory behavior into a hybrid evidence-linked memory graph with freshness controls, while preserving backward compatibility with existing memory/session mechanisms.
+Provide AI agents with a structured, evidence-linked memory graph featuring typed nodes, freshness controls, contradiction handling, and ranked retrieval — delivered as a standalone MCP server compatible with any MCP client.
 
 ## 2) Problem Statement
 
-Current memory context is useful but lacks a unified long-horizon structured model for:
+Current AI agent memory systems lack:
 
-- architecture decisions and constraints over time
-- incident and operational context reuse
-- explicit freshness/staleness governance
-- robust evidence linking for memory trustworthiness
+- typed, structured memory nodes (architecture decisions, incidents, constraints, preferences)
+- explicit freshness/staleness governance with decay rules
+- evidence linking for memory trustworthiness
+- contradiction detection and resolution
+- cross-session and cross-project memory reuse
 
 ## 3) Non-Goals
 
-- dropping existing memory file compatibility in early phases
+- replacing agent-internal short-term context windows
 - introducing opaque memory behavior without traceability
 - treating historical memory as always high-confidence truth
 
-## 4) Existing System Anchors
+## 4) MCP Tools Exposed
 
-Primary anchors:
+| Tool | Description |
+|---|---|
+| `memory.create_node` | Create a typed memory node with content, scope, and optional evidence |
+| `memory.query` | Retrieve ranked memory nodes by relevance, freshness, and evidence strength |
+| `memory.add_edge` | Create a typed relationship between two memory nodes |
+| `memory.attach_evidence` | Attach evidence references to an existing node |
+| `memory.refresh` | Reaffirm a node, boosting its freshness score |
+| `memory.stats` | Return graph statistics: node counts, freshness distribution, contradictions |
 
-- memory/file context shaping: `memdir/memdir.ts`
-- team memory sync: `services/teamMemorySync/index.ts`
-- session memory services: `services/SessionMemory/sessionMemory.ts`
-- session transcript evidence: `utils/sessionStorage.ts`
+## 5) MCP Resources Exposed
 
-## 5) Functional Requirements
-
-1. Introduce typed memory nodes:
-   - user preferences
-   - architecture decisions
-   - incidents
-   - constraints
-   - repo landmarks
-   - tool outcomes
-2. Support typed edges and relationship semantics.
-3. Enforce freshness scoring with decay/refresh rules.
-4. Require evidence links for high-confidence memory usage.
-5. Maintain backward-compatible read path for existing memory artifacts.
+| Resource | Description |
+|---|---|
+| `memory://stats` | Read-only graph statistics snapshot |
+| `memory://node/{nodeId}` | Read-only single node with edges and evidence |
 
 ## 6) Memory Graph Model
 
-## 6.1 Node model (logical)
+### 6.1 Node model
 
-- `nodeId`
-- `nodeType`
-- `content`
-- `confidence`
-- `freshnessScore`
+- `nodeId` (branded string)
+- `nodeType` (preference | architecture_decision | incident | constraint | repo_landmark | tool_outcome | general)
+- `content` (text)
+- `confidence` (0-1)
+- `freshnessScore` (0-1, decays over time)
 - `createdAt`, `updatedAt`
-- `evidenceRefs[]`
-- `sourceScope` (session/project/team)
+- `evidenceRefs[]` (pointers to transcripts, tool results, code anchors, etc.)
+- `sourceScope` (session | project | team)
+- `tags[]`
 
-## 6.2 Edge model
+### 6.2 Edge model
 
 - `edgeId`
 - `fromNodeId`, `toNodeId`
-- `relationType` (supports/contradicts/depends_on/supersedes/etc.)
-- `weight`
+- `relationType` (supports | contradicts | depends_on | supersedes | related_to | caused_by | blocks)
+- `weight` (0-1)
 - `createdAt`
 
-## 6.3 Evidence link model
+### 6.3 Evidence link model
 
-Evidence references may point to:
+Evidence references may point to: transcript events, tool results, verification artifacts, code anchors, decision records, external URIs.
 
-- transcript events
-- tool results
-- verification artifacts
-- code anchors
-- decision records
-
-High-confidence policy:
-
-- node cannot be treated high-confidence without valid evidence links.
+High-confidence policy: a node cannot be treated as high-confidence without valid evidence links.
 
 ## 7) Freshness and Staleness Policy
 
-## 7.1 Freshness mechanics
+### 7.1 Freshness mechanics
 
-Freshness score should consider:
+Freshness score considers: recency, evidence recency, contradiction/superseding nodes, environment changes.
 
-- recency
-- evidence recency
-- contradiction/newer superseding nodes
-- environment/context changes
+### 7.2 Decay and refresh
 
-## 7.2 Decay and refresh
+- Stale nodes decay automatically via configurable decay function (exponential, linear, step)
+- Refresh requires new supporting evidence or explicit reaffirmation
+- Decayed nodes remain retrievable but lower-ranked and flagged
 
-- stale nodes decay automatically over time
-- refresh requires new supporting evidence or explicit reaffirmation
-- decayed nodes remain retrievable but lower-ranked and flagged
+### 7.3 Contradiction handling
 
-## 7.3 Contradiction handling
+- Contradictory nodes (linked by `contradicts` edges) do not silently overwrite each other
+- Retrieval includes contradiction flags so the agent can reason about conflicts
 
-- contradictory nodes must not silently overwrite each other
-- resolver should preserve lineage and mark conflict status
+## 8) Retrieval and Ranking
 
-## 8) Retrieval and Injection Strategy
+Retrieval ranks by composite score: `relevance * freshnessWeight + freshness * freshnessWeight + evidenceStrength * evidenceWeight`
 
-Retrieval must:
+Injection includes provenance metadata so agents can assess memory trustworthiness.
 
-1. prioritize relevant + fresh + evidenced nodes
-2. include uncertainty markers for stale/conflicted memory
-3. avoid high-confidence injection from weak evidence
+## 9) Storage
 
-Injection must:
+SQLite — zero-config, local persistence. Database stored at `~/.tengu/memory.db` by default (configurable via `TENGU_MEMORY_DB` env var).
 
-- remain additive and compatible with existing context assembly paths
-- include provenance metadata for auditability
+**Reference stack:** native `better-sqlite3` on supported Node LTS. **Current package build** uses `sql.js` (WASM SQLite) so the server runs without native compilation; the file format remains standard SQLite.
 
-## 9) Backward Compatibility and Migration
+## 10) Failure Modes
 
-Migration principles:
+1. Database unavailable — graceful error, tools return structured error responses
+2. Evidence link corruption — quarantine suspicious nodes, flag in stats
+3. Stale-memory over-injection — freshness scoring prevents this by design
 
-1. maintain current memory read compatibility initially
-2. build graph sidecar alongside current stores
-3. progressively shift retrieval to graph-informed ranking
-4. keep fallback to legacy path during phased rollout
+## 11) Type Definitions
 
-No destructive migration without proven parity and rollback readiness.
-
-## 10) Failure Modes and Recovery
-
-1. memory graph store unavailable
-2. evidence link corruption/incompleteness
-3. stale-memory over-injection
-4. sync divergence across scopes
-
-Recovery:
-
-- fallback to legacy memory path
-- quarantine suspicious nodes
-- emit telemetry and require refresh/rebuild workflow
-
-## 11) Observability and Audit Requirements
-
-Required signals:
-
-- retrieval source mix (graph vs legacy)
-- freshness distribution
-- contradiction incidence
-- evidence-link coverage rate
-- stale-node usage rate in outputs
-
-Auditability:
-
-- every injected high-confidence memory item must be traceable to evidence.
-
-## 12) Rollout Strategy
-
-1. shadow graph population
-2. advisory retrieval ranking (non-blocking)
-3. controlled activation for selected domains/rings
-4. gradual expansion once quality/safety metrics stabilize
-
-Controls:
-
-- feature flags
-- kill switch to legacy path
-- ringed rollout
-
-## 13) Validation Requirements
-
-Must validate:
-
-- backward compatibility with existing memory/session behavior
-- freshness and decay logic correctness
-- contradiction handling correctness
-- evidence-link requirements for high-confidence usage
-- no regression in completion quality and safety signals
-
-## 14) Risks and Mitigations
-
-1. **Stale memory harms decisions**
-   - Mitigation: strict freshness scoring and uncertainty tagging
-2. **Graph complexity overhead**
-   - Mitigation: phased rollout + bounded scope per phase
-3. **Evidence-link gaps**
-   - Mitigation: high-confidence guardrails + audit checks
-4. **Migration drift**
-   - Mitigation: sidecar strategy and fallback path
-
-## 15) Bounded-Risk Constraints
-
-Dependencies involving unresolved `U-001`/`U-002` remain `bounded-risk` and block final launch sign-off where applicable.
-
-## 16) Acceptance Criteria
-
-1. graph schema and freshness model approved
-2. compatibility migration plan is additive and rollback-safe
-3. evidence-linking requirements are explicit and validated
-4. retrieval policy handles stale/conflicting memory safely
-5. rollout and fallback controls are defined
-
-## 17) Decision Log Entry
-
-| Decision ID | Date (UTC) | Owner | Context / Problem | Options Considered | Chosen Option | Rationale | Compatibility Impact | Risk Class (`R1/R2/R3`) | Verification Plan | Rollback Plan | Evidence Links | Status |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| DEC-RFC-E-001 | 2026-03-31 | Memory systems owner | Need long-horizon structured memory with trust controls while preserving existing behavior | full replacement; sidecar graph with compatibility fallback; metadata-only extension | sidecar graph with compatibility fallback | safest migration path with strong provenance and freshness controls | additive-first with legacy compatibility path | R2 | freshness/compatibility/quality validation suite | disable graph retrieval and revert to legacy memory path | `docs/03-gap-analysis-and-target-architecture.md`, `docs/08-validation-and-test-strategy.md` | proposed |
-
----
-
-This RFC defines a production-ready Memory 2.0 architecture compatible with current system constraints.
+All types are defined in `@tengu/shared-types` package: `MemoryNode`, `MemoryEdge`, `MemoryQueryResult`, `MemoryStats`, `FreshnessConfig`, `EvidenceRef`.

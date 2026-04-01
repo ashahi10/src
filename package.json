@@ -1,0 +1,25 @@
+{
+  "name": "tengu-mcp-suite",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A suite of 6 MCP servers for advanced AI agent infrastructure: structured memory, mission planning, risk policy, verification, cost-aware planning, and multi-agent contracts.",
+  "license": "MIT",
+  "author": "Aditya Shahi",
+  "scripts": {
+    "build": "pnpm -r run build",
+    "clean": "pnpm -r run clean",
+    "typecheck": "pnpm -r run typecheck",
+    "dev:memory": "pnpm --filter @tengu/memory-server run dev",
+    "verify:memory": "pnpm --filter @tengu/memory-server run verify:ship"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "esbuild"
+    ]
+  }
+}

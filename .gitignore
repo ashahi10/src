@@ -1,20 +1,21 @@
 # Dependencies
 node_modules/
 
-# Build outputs & caches
+# Build outputs
 dist/
-build/
-out/
-.next/
-.cache/
 *.tsbuildinfo
-.turbo/
 
-# Environment and local secrets (never commit real values)
+# Environment and secrets
 .env
 .env.*
 !.env.example
 !.env.sample
+
+# SQLite databases (local runtime data)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
 
 # Keys and certificates
 *.pem
@@ -22,15 +23,10 @@ out/
 *.p12
 *.pfx
 *.crt
-id_rsa
-id_ed25519
-*.keystore
 
-# Logs and debug
+# Logs
 *.log
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 pnpm-debug.log*
 
 # Test / coverage
@@ -41,11 +37,8 @@ coverage/
 .DS_Store
 Thumbs.db
 
-# Editors / IDE (local overrides)
+# Editors / IDE
 .idea/
 *.swp
 *.swo
 *~
-
-# Optional: uncomment if you store MCP or tokens under project .cursor
-# .cursor/mcp.json
