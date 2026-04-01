@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+
+# Build outputs & caches
+dist/
+build/
+out/
+.next/
+.cache/
+*.tsbuildinfo
+.turbo/
+
+# Environment and local secrets (never commit real values)
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+id_rsa
+id_ed25519
+*.keystore
+
+# Logs and debug
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test / coverage
+coverage/
+.nyc_output/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors / IDE (local overrides)
+.idea/
+*.swp
+*.swo
+*~
+
+# Optional: uncomment if you store MCP or tokens under project .cursor
+# .cursor/mcp.json
