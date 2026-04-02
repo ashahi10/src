@@ -1,18 +1,27 @@
-# Mnemai — memory-first MCP toolkit
+# Mnemai — Evidence-Linked Agent Memory for MCP
 
-**Mnemai** ships **three** local-first MCP servers that share one coherent workflow: **missions** (objectives), **memory** (evidence-linked graph), and **verification** (proof records). Together they let you ground automation in **durable state**, not one-off tool calls. Published on npm under the **`@mnemai`** scope (Memory 2.0 is [`@mnemai/memory-server`](https://www.npmjs.com/package/@mnemai/memory-server)).
+Agents may “remember” for a minute, then forget: most implementations fall back to raw text blobs or vector similarity, with no durable structure, no explicit provenance, and no auditable way to connect what an agent *said* to what it *knows*.
+
+**Mnemai** fixes that with **three** local-first MCP servers that work as one coherent workflow: **missions** (objectives), **memory** (evidence-linked graph), and **verification** (proof records). Together they turn agent memory into **structured, auditable, evidence-backed state** you can reuse across MCP workflows. Published on npm under the **`@mnemai`** scope (Memory 2.0 is [`@mnemai/memory-server`](https://www.npmjs.com/package/@mnemai/memory-server)).
 
 ## Problem
 
-MCP stacks often behave like **flat tool menus**: no shared place for objectives, facts, and auditable proof. Mnemai addresses that with **small SQLite-backed servers** (portable `sql.js`), explicit **evidence references**, and a **tested multi-server demo** you can run from a clean checkout.
+Most agent “memory” is still just **text** or **vector similarity**. That’s useful for recall, but it’s fragile in production:
+- no consistent structure for facts vs context vs decisions,
+- no explicit provenance for *why* something was believed,
+- no auditable record of proof that links an agent output back to stored evidence.
+
+When memory isn’t structured and evidence isn’t explicit, agent workflows become hard to debug, hard to verify, and easy to break as you scale to multiple tools/hosts.
+
+Mnemai addresses this by engineering **evidence-linked memory**, **mission tracking**, and **verification records** as small **SQLite-backed MCP servers** (portable `sql.js`) with a tested cross-server demo you can run from a clean checkout.
 
 ## What we built (and how)
 
 | Piece | Role | Persistence | CI gate |
 |-------|------|-------------|---------|
 | **Memory 2.0** (`@mnemai/memory-server`) | Typed nodes, edges, hybrid search, review queue, optional embeddings | `MNEMAI_MEMORY_DB` (default **`~/.mnemai/memory.db`**; uses existing `~/.tengu/memory.db` if present; legacy `TENGU_MEMORY_DB` still works) | `verify:ship` (Vitest + smoke + **MCP stdio e2e**) |
-| **Mission** (`@mnemai/mission-server`) | Create/list/get mission objectives | `TENGU_MISSION_DB` (default `~/.tengu/mission.db`) | `verify:ship` (unit + smoke + **stdio e2e**) |
-| **Verification** (`@mnemai/verification-server`) | Record and fetch proof artifacts (optionally tied to a mission id) | `TENGU_VERIFICATION_DB` (default `~/.tengu/verification.db`) | `verify:ship` (unit + smoke + **stdio e2e**) |
+| **Mission** (`@mnemai/mission-server`) | Track objectives so “why we did it” survives beyond a single run | `TENGU_MISSION_DB` (default `~/.tengu/mission.db`) | `verify:ship` (unit + smoke + **stdio e2e**) |
+| **Verification** (`@mnemai/verification-server`) | Record proof artifacts so agent outputs stay auditable (and can be tied back to a mission) | `TENGU_VERIFICATION_DB` (default `~/.tengu/verification.db`) | `verify:ship` (unit + smoke + **stdio e2e**) |
 
 **How it fits:** hosts start each server as a **separate stdio process** (typical MCP). Our **platform demo** connects all three via the official SDK and runs one cross-server workflow (see below).
 

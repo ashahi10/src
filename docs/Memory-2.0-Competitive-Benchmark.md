@@ -12,17 +12,19 @@ This benchmark compares `@mnemai/memory-server` against current MCP memory offer
 
 ## Capability Matrix
 
-| Capability | Mnemai Memory 2.0 | Official MCP Memory | OpenMemory/Mem0 | mcp-brain-tools | mcp-memory-libsql |
-|---|---|---|---|---|---|
-| Typed memory nodes | Yes (strict enums) | Basic entities/types | Generic memories/topics | Entity/observation model | Entity/relation model |
-| Explicit evidence references | Yes | No first-class evidence links | Limited metadata-oriented | Limited | Limited |
-| Contradiction edges | Yes (`contradicts`) | Not first-class | Not first-class | Not first-class | Not first-class |
-| Trust policy (high confidence requires evidence) | Yes | No | Partial/opaque | Partial | Partial |
-| Freshness model | Decay + refresh | Minimal/basic | Product-defined | Strong (review cadence) | Basic/medium |
-| Contradiction-aware retrieval output | Yes (flags + arbitration metadata) | No | No | Limited | Limited |
-| Portable local runtime | Yes (Node + sql.js SQLite) | Yes | Mostly local-first product path | Requires Elasticsearch | Local/remote libSQL |
-| MCP resources (`memory://...`) | Yes | Varies | Varies | Varies | Varies |
-| Test coverage depth | Growing (unit + smoke + integration) | Varies | Product-level | Moderate | Moderate |
+
+| Capability                                       | Mnemai Memory 2.0                    | Official MCP Memory           | OpenMemory/Mem0                 | mcp-brain-tools          | mcp-memory-libsql     |
+| ------------------------------------------------ | ------------------------------------ | ----------------------------- | ------------------------------- | ------------------------ | --------------------- |
+| Typed memory nodes                               | Yes (strict enums)                   | Basic entities/types          | Generic memories/topics         | Entity/observation model | Entity/relation model |
+| Explicit evidence references                     | Yes                                  | No first-class evidence links | Limited metadata-oriented       | Limited                  | Limited               |
+| Contradiction edges                              | Yes (`contradicts`)                  | Not first-class               | Not first-class                 | Not first-class          | Not first-class       |
+| Trust policy (high confidence requires evidence) | Yes                                  | No                            | Partial/opaque                  | Partial                  | Partial               |
+| Freshness model                                  | Decay + refresh                      | Minimal/basic                 | Product-defined                 | Strong (review cadence)  | Basic/medium          |
+| Contradiction-aware retrieval output             | Yes (flags + arbitration metadata)   | No                            | No                              | Limited                  | Limited               |
+| Portable local runtime                           | Yes (Node + sql.js SQLite)           | Yes                           | Mostly local-first product path | Requires Elasticsearch   | Local/remote libSQL   |
+| MCP resources (`memory://...`)                   | Yes                                  | Varies                        | Varies                          | Varies                   | Varies                |
+| Test coverage depth                              | Growing (unit + smoke + integration) | Varies                        | Product-level                   | Moderate                 | Moderate              |
+
 
 ## Where Memory 2.0 Is Already Strong
 
@@ -53,3 +55,4 @@ Memory 2.0 should be positioned as:
 - [memory-graph repository](https://github.com/memory-graph/memory-graph)
 - [mcp-memory-libsql README](https://raw.githubusercontent.com/spences10/mcp-memory-libsql/main/README.md)
 - [Mem0/OpenMemory overview](https://mem0.ai/openmemory-mcp)
+
