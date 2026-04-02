@@ -2,6 +2,13 @@
 
 All notable changes to `@mnemai/memory-server` are documented here.
 
+## [0.1.4] - 2026-04-02
+
+### Fixed
+
+- **npm README:** Link to `docs/` and repo files with **absolute GitHub URLs** so they work on [npmjs.com](https://www.npmjs.com/package/@mnemai/memory-server) (the `docs/` tree is not shipped in the package tarball).
+- **package.json:** Add `repository`, `homepage`, and `bugs` for discoverability.
+
 ## [0.1.3] - 2026-04-02
 
 ### Changed

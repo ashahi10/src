@@ -2,6 +2,8 @@
 
 **Memory 2.0** — MCP server for an **evidence-linked memory graph**: typed nodes, relationships, freshness decay, contradiction hints, and ranked retrieval with explicit provenance fields. **Local-first** (SQLite file on disk).
 
+**Where the docs live:** This page is the npm **README** only. Deeper guides (security, competitive benchmark, RFC, performance, host matrix) are Markdown files in the **[`docs/` folder on GitHub](https://github.com/ashahi10/src/tree/main/docs)** — readable by anyone **when the repository is public**. They are **not** bundled inside the npm tarball.
+
 ## Capabilities
 
 | Area | What you get |
@@ -32,7 +34,7 @@ MCP config (set an absolute DB path):
 }
 ```
 
-Publishing and version bumps: see repo [RELEASING.md](../../RELEASING.md). `prepublishOnly` runs **`pnpm run verify:ship`**.
+Publishing and version bumps: see **[RELEASING.md](https://github.com/ashahi10/src/blob/main/RELEASING.md)**. `prepublishOnly` runs **`pnpm run verify:ship`**.
 
 ## What `verify:ship` checks
 
@@ -43,7 +45,7 @@ Publishing and version bumps: see repo [RELEASING.md](../../RELEASING.md). `prep
 
 **Scope:** Proves the **reference SDK wire path** on CI’s OS (Linux). Hosts can still differ (timeouts, stderr). Not a guarantee for every proprietary MCP client.
 
-Repo CI also builds the workspace, typechecks, verifies **mission** + **verification** servers, **npm pack** sanity, and the **platform demo** (see root [README.md](../../README.md)).
+Repo CI also builds the workspace, typechecks, verifies **mission** + **verification** servers, **npm pack** sanity, and the **platform demo** (see root **[README.md](https://github.com/ashahi10/src/blob/main/README.md)**).
 
 ## Requirements
 
@@ -117,17 +119,17 @@ Use **absolute paths** — hosts often use a cwd that is not your repo.
 
 ## Security, performance, limits
 
-- [Security & privacy](../../docs/Memory-2.0-Security-Privacy.md)
-- [Performance (test SLOs)](../../docs/Memory-2.0-Performance.md)
-- [Host matrix](../../docs/Memory-2.0-Host-Matrix.md)
+- [Security & privacy](https://github.com/ashahi10/src/blob/main/docs/Memory-2.0-Security-Privacy.md)
+- [Performance (test SLOs)](https://github.com/ashahi10/src/blob/main/docs/Memory-2.0-Performance.md)
+- [Host matrix](https://github.com/ashahi10/src/blob/main/docs/Memory-2.0-Host-Matrix.md)
 
 **Limits (honest):** **sql.js** build has **no FTS5**; lexical search uses **`node_search_tokens`** + BM25-style scoring plus substring match. **Embeddings** are optional and require your own API. Large graphs use **bounded retrieval** (see env vars above). These tradeoffs favor **portable, predictable** local operation over mimicking a hosted search product.
 
 ## Related docs
 
-- [RFC: Memory 2.0](../../docs/RFC-Memory-2.0.md)
-- [Runtime compatibility](../../docs/Memory-2.0-Runtime-Compatibility.md)
-- [Competitive benchmark](../../docs/Memory-2.0-Competitive-Benchmark.md)
+- [RFC: Memory 2.0](https://github.com/ashahi10/src/blob/main/docs/RFC-Memory-2.0.md)
+- [Runtime compatibility](https://github.com/ashahi10/src/blob/main/docs/Memory-2.0-Runtime-Compatibility.md)
+- [Competitive benchmark](https://github.com/ashahi10/src/blob/main/docs/Memory-2.0-Competitive-Benchmark.md)
 
 ## License
 

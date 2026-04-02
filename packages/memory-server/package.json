@@ -1,8 +1,17 @@
 {
   "name": "@mnemai/memory-server",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "MCP server providing evidence-linked memory graph with typed nodes, freshness decay, and contradiction handling",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ashahi10/src.git",
+    "directory": "packages/memory-server"
+  },
+  "homepage": "https://github.com/ashahi10/src/tree/main/packages/memory-server#readme",
+  "bugs": {
+    "url": "https://github.com/ashahi10/src/issues"
+  },
   "type": "module",
   "main": "dist/index.js",
   "bin": {
