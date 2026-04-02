@@ -17,7 +17,7 @@ import { initDb, closeDb } from './graph/store.js'
 
 const server = new McpServer({
   name: 'mnemai-memory',
-  version: '0.1.0',
+  version: '0.1.1',
 })
 
 server.tool(
@@ -145,6 +145,19 @@ server.registerResource(
 )
 
 async function main() {
+  const argv = process.argv.slice(2)
+  if (argv.includes('--help') || argv.includes('-h')) {
+    console.log(`@mnemai/memory-server — MCP Memory 2.0 (stdio transport)
+
+Usage: mnemai-memory
+  Starts the Model Context Protocol server on stdin/stdout (no HTTP port).
+
+Docs: https://www.npmjs.com/package/@mnemai/memory-server
+Environment: TENGU_MEMORY_DB (SQLite path), TENGU_MEMORY_EMBED_* (optional embeddings).
+`)
+    process.exit(0)
+  }
+
   try {
     await initDb()
   } catch (error) {

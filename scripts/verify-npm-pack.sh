@@ -18,6 +18,6 @@ test -f "$ENTRY"
 head -1 "$ENTRY" | grep -q '#!/usr/bin/env node'
 node -e "
 const p=require('./node_modules/@mnemai/memory-server/package.json');
-if(p.bin['mnemai-memory']!=='dist/index.js') process.exit(1);
+if(p.bin['mnemai-memory']!=='bin/mnemai-memory.cjs') process.exit(1);
 "
 echo "verify-npm-pack: OK ($(basename "$TARBALL"))"

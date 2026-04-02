@@ -1,14 +1,14 @@
 {
   "name": "@mnemai/memory-server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP server providing evidence-linked memory graph with typed nodes, freshness decay, and contradiction handling",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "mnemai-memory": "dist/index.js"
+    "mnemai-memory": "bin/mnemai-memory.cjs"
   },
-  "files": ["dist", "CHANGELOG.md", "README.md"],
+  "files": ["dist", "bin", "CHANGELOG.md", "README.md"],
   "publishConfig": {
     "access": "public"
   },

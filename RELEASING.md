@@ -58,3 +58,18 @@ Configure MCP with `"command": "npx"` and `"args": ["--yes", "@mnemai/memory-ser
 ## Scoped registry
 
 The scope is **`@mnemai`**. Ensure you are logged into npm (`npm login`) with rights to publish under that scope (organization membership or user scope).
+
+## Troubleshooting
+
+### `npm view @mnemai/memory-server` returns `E404` but the package page loads on npmjs.com
+
+The website and `npm install` use the same registry; a mismatch usually means your CLI config is not what you think.
+
+- Force the public registry for one command:  
+  `npm view "@mnemai/memory-server" version --registry=https://registry.npmjs.org/`
+- List overrides: `npm config list` and check for lines like `@mnemai:registry=...` in **project** or **user** `.npmrc`.
+- If you use a mirror or private registry for scoped packages, point `@mnemai` back to the public registry for this scope, or use the `--registry` flag above.
+
+### `npx` says `sh: mnemai-memory: command not found`
+
+Prefer **`0.1.1+`**, which installs a CommonJS `bin` launcher. If you are stuck on an older tarball, use a global install (`npm i -g @mnemai/memory-server`) or invoke Node on the package entry (see the root README “absolute `node` path” flow).
