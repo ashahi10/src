@@ -1,12 +1,12 @@
 {
-  "name": "@tengu/verification-server",
+  "name": "@mnemai/verification-server",
   "version": "0.1.0",
   "description": "MCP server for durable verification proofs (sql.js SQLite)",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "tengu-verification": "dist/index.js"
+    "mnemai-verification": "dist/index.js"
   },
   "files": ["dist"],
   "scripts": {

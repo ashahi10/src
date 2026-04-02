@@ -1,12 +1,12 @@
 {
-  "name": "@tengu/memory-server",
+  "name": "@mnemai/memory-server",
   "version": "0.1.0",
   "description": "MCP server providing evidence-linked memory graph with typed nodes, freshness decay, and contradiction handling",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "tengu-memory": "dist/index.js"
+    "mnemai-memory": "dist/index.js"
   },
   "files": ["dist", "CHANGELOG.md", "README.md"],
   "publishConfig": {
@@ -14,7 +14,7 @@
   },
   "scripts": {
     "prepublishOnly": "pnpm run verify:ship",
-    "build": "pnpm --filter @tengu/shared-types run build && tsup",
+    "build": "pnpm --filter @mnemai/shared-types run build && tsup",
     "dev": "tsx src/index.ts",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
@@ -30,7 +30,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@tengu/shared-types": "workspace:*",
+    "@mnemai/shared-types": "workspace:*",
     "@types/node": "catalog:",
     "@types/uuid": "^10.0.0",
     "tsup": "^8.0.0",

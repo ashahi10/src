@@ -41,7 +41,7 @@ jobs:
       - name: Verify verification-server
         run: pnpm run verify:verification
 
-      - name: Verify npm pack (@tengu/memory-server)
+      - name: Verify npm pack (@mnemai/memory-server)
         run: pnpm run verify:npm-pack
 
       - name: Platform demo (mission + memory + verification)

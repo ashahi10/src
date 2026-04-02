@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { MEMORY_NODE_TYPES, MEMORY_SCOPES } from '@tengu/shared-types'
+import { MEMORY_NODE_TYPES, MEMORY_SCOPES } from '@mnemai/shared-types'
 import { queryMemory } from '../retrieval/query.js'
 import { isStale, hasContradictions } from '../freshness/policy.js'
 

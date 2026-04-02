@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 export function tempDbFile(): string {
-  return join(tmpdir(), `tengu-mission-test-${randomBytes(8).toString('hex')}.db`)
+  return join(tmpdir(), `mnemai-mission-test-${randomBytes(8).toString('hex')}.db`)
 }
 
 export function removeFile(path: string): void {

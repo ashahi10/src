@@ -1,5 +1,5 @@
-import type { MemoryNodeType, MemoryScope, MemoryStats } from '@tengu/shared-types'
-import { MEMORY_NODE_TYPES, MEMORY_SCOPES } from '@tengu/shared-types'
+import type { MemoryNodeType, MemoryScope, MemoryStats } from '@mnemai/shared-types'
+import { MEMORY_NODE_TYPES, MEMORY_SCOPES } from '@mnemai/shared-types'
 import { getDb } from '../graph/store.js'
 import { getStaleNodeIds, getContradictionPairs, countHighConfidenceWithoutEvidence } from '../freshness/policy.js'
 

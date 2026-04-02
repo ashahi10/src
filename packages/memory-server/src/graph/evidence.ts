@@ -1,4 +1,4 @@
-import type { EvidenceRef, MemoryNodeId } from '@tengu/shared-types'
+import type { EvidenceRef, MemoryNodeId } from '@mnemai/shared-types'
 import { getDb, scheduleSave } from './store.js'
 
 export function attachEvidence(nodeId: MemoryNodeId, refs: EvidenceRef[]): EvidenceRef[] {

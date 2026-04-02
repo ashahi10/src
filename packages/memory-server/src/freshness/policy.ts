@@ -1,4 +1,4 @@
-import type { MemoryNodeId } from '@tengu/shared-types'
+import type { MemoryNodeId } from '@mnemai/shared-types'
 import { getDb } from '../graph/store.js'
 import { getContradictions } from '../graph/edge.js'
 import { HIGH_CONFIDENCE_MIN } from '../trustPolicy.js'

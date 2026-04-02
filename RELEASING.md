@@ -1,4 +1,4 @@
-# Releasing `@tengu/memory-server`
+# Releasing `@mnemai/memory-server`
 
 ## Security (read first)
 
@@ -12,14 +12,13 @@
 - `pnpm run verify:npm-pack` passes (tarball install + shebang + bin field).
 - Version bumped in `packages/memory-server/package.json` and `packages/memory-server/CHANGELOG.md`.
 
-## npm account and `@tengu` scope
+## npm account and `@mnemai` scope
 
-Publishing **`@tengu/memory-server`** requires permission to publish under the **`@tengu`** scope on [npmjs.com](https://www.npmjs.com). That usually means:
+Publishing **`@mnemai/memory-server`** requires permission to publish under the **`@mnemai`** scope on [npmjs.com](https://www.npmjs.com).
 
-- The **npm organization** (or user scope) `tengu` exists, and your account is a **member** with publish rights, **or**
-- You are logged in as the **owner** of that scope.
-
-If you do not own `@tengu` yet, create the org on npm (paid for orgs on npm’s terms) or temporarily publish **unscoped** under another name (would require changing `package.json` `name` — not the default in this repo).
+- **Public packages are free.** This package sets `publishConfig.access: "public"`, so `pnpm publish --access public` does **not** require a paid npm private-modules plan.
+- **You must control the scope.** Either create a [free npm organization](https://www.npmjs.com/org/create) named `mnemai` (if the name is available) and publish as a member with publish rights, or use an npm **username** that is exactly `mnemai` so `@mnemai/*` maps to your user account.
+- **Publishing auth:** npm often requires **two-factor authentication** or a **granular access token** that can publish (see npm’s account security settings). If you see `E403` mentioning 2FA, enable 2FA or create a publish-capable token and log in with it.
 
 ## One-time login (you type the password only in the terminal)
 
@@ -51,11 +50,11 @@ pnpm publish --access public
 After publish:
 
 ```bash
-npx --yes @tengu/memory-server
+npx --yes @mnemai/memory-server
 ```
 
-Configure MCP with `"command": "npx"` and `"args": ["--yes", "@tengu/memory-server"]` (and optional `"env"` for `TENGU_MEMORY_DB` / embeddings). Use the same pattern for `tengu-mission` / `tengu-verification` when those packages are published.
+Configure MCP with `"command": "npx"` and `"args": ["--yes", "@mnemai/memory-server"]` (and optional `"env"` for `TENGU_MEMORY_DB` / embeddings). Use the same pattern for `mnemai-mission` / `mnemai-verification` when those packages are published.
 
 ## Scoped registry
 
-The scope is **`@tengu`**. Ensure you are logged into npm (`npm login`) with rights to publish under that scope.
+The scope is **`@mnemai`**. Ensure you are logged into npm (`npm login`) with rights to publish under that scope (organization membership or user scope).

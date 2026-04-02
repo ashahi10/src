@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import type { MemoryNodeId } from '@tengu/shared-types'
+import type { MemoryNodeId } from '@mnemai/shared-types'
 import { verifyNode } from '../graph/review.js'
 
 export const verifyNodeToolSchema = z.object({

@@ -6,7 +6,7 @@ Automated checks run on **Ubuntu (GitHub Actions)** with **Node 22**: build → 
 |--------------------|-----------|--------|
 | Linux + Node 22 (CI) | Yes | Same sequence as `.github/workflows/ci.yml`. |
 | macOS / Windows (local dev) | Partial | Same tests pass when run locally; not CI-matrixed per OS. |
-| Cursor MCP | Manual | Configure with absolute `node` + path to `dist/index.js` or `npx @tengu/memory-server` after publish. |
+| Cursor MCP | Manual | Configure with absolute `node` + path to `dist/index.js` or `npx @mnemai/memory-server` after publish. |
 | Claude Desktop | Manual | Same as Cursor; validate `claude_desktop_config.json` shape for your version. |
 | Other MCP clients | Manual | Any client that supports stdio MCP should work; timeouts and stderr policies differ. |
 

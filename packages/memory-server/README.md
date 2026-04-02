@@ -1,4 +1,4 @@
-# @tengu/memory-server
+# @mnemai/memory-server
 
 **Memory 2.0** — MCP server for an **evidence-linked memory graph**: typed nodes, relationships, freshness decay, contradiction hints, and ranked retrieval with explicit provenance fields. **Local-first** (SQLite file on disk).
 
@@ -15,7 +15,7 @@
 ## Install from npm
 
 ```bash
-npx --yes @tengu/memory-server
+npx --yes @mnemai/memory-server
 ```
 
 MCP config (set an absolute DB path):
@@ -23,9 +23,9 @@ MCP config (set an absolute DB path):
 ```json
 {
   "mcpServers": {
-    "tengu-memory": {
+    "mnemai-memory": {
       "command": "npx",
-      "args": ["--yes", "@tengu/memory-server"],
+      "args": ["--yes", "@mnemai/memory-server"],
       "env": { "TENGU_MEMORY_DB": "/absolute/path/to/memory.db" }
     }
   }
@@ -36,7 +36,7 @@ Publishing and version bumps: see repo [RELEASING.md](../../RELEASING.md). `prep
 
 ## What `verify:ship` checks
 
-1. Build `dist/index.js` (CLI **`tengu-memory`**, shebang for Unix).
+1. Build `dist/index.js` (CLI **`mnemai-memory`**, shebang for Unix).
 2. Typecheck.
 3. **Vitest** — graph, retrieval, embeddings (mocked HTTP), **MCP stdio e2e** (`ping`, tools, resources, stderr clean on success).
 4. In-process **smoke** script.
@@ -81,7 +81,7 @@ node packages/memory-server/dist/index.js
 ```json
 {
   "mcpServers": {
-    "tengu-memory": {
+    "mnemai-memory": {
       "command": "node",
       "args": ["/absolute/path/to/repo/packages/memory-server/dist/index.js"],
       "env": { "TENGU_MEMORY_DB": "/absolute/path/to/my-memory.db" }

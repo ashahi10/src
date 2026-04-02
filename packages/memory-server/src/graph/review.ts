@@ -1,4 +1,4 @@
-import type { MemoryNode, MemoryNodeId, MemoryScope } from '@tengu/shared-types'
+import type { MemoryNode, MemoryNodeId, MemoryScope } from '@mnemai/shared-types'
 import { refreshNode } from '../freshness/scorer.js'
 import { getDb, scheduleSave } from './store.js'
 import { getNode, patchNodeMetadata } from './node.js'

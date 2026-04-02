@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import type { MemoryNodeId } from '@tengu/shared-types'
+import type { MemoryNodeId } from '@mnemai/shared-types'
 import {
   effectiveIndexHitCap,
   mergeCandidateNodeIds,

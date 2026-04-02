@@ -1,4 +1,4 @@
-import type { FreshnessConfig, MemoryNodeId } from '@tengu/shared-types'
+import type { FreshnessConfig, MemoryNodeId } from '@mnemai/shared-types'
 import { getDb, scheduleSave } from '../graph/store.js'
 
 const DEFAULT_CONFIG: FreshnessConfig = {

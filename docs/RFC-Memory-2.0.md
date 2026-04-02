@@ -1,7 +1,7 @@
 # RFC: System-Aware Memory 2.0
 
 Status: Approved  
-Package: `@tengu/memory-server`  
+Package: `@mnemai/memory-server`  
 Type: MCP Server (stdio transport)
 
 ## 1) Objective
@@ -107,4 +107,4 @@ SQLite — zero-config, local persistence. Database stored at `~/.tengu/memory.d
 
 ## 11) Type Definitions
 
-All types are defined in `@tengu/shared-types` package: `MemoryNode`, `MemoryEdge`, `MemoryQueryResult`, `MemoryStats`, `FreshnessConfig`, `EvidenceRef`.
+All types are defined in `@mnemai/shared-types` package: `MemoryNode`, `MemoryEdge`, `MemoryQueryResult`, `MemoryStats`, `FreshnessConfig`, `EvidenceRef`.

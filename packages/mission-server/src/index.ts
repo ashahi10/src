@@ -5,7 +5,7 @@ import { closeDb, initDb } from './store.js'
 import { createMission, getMission, listMissions } from './missionRepo.js'
 
 const server = new McpServer({
-  name: 'tengu-mission',
+  name: 'mnemai-mission',
   version: '0.1.0',
 })
 

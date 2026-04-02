@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import type { MemoryNodeId } from '@tengu/shared-types'
+import type { MemoryNodeId } from '@mnemai/shared-types'
 import { attachEvidence } from '../graph/evidence.js'
 import { getNode } from '../graph/node.js'
 

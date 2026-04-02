@@ -2,7 +2,7 @@
 
 ## Scope
 
-This benchmark compares `@tengu/memory-server` against current MCP memory offerings commonly used with MCP-capable editors and clients:
+This benchmark compares `@mnemai/memory-server` against current MCP memory offerings commonly used with MCP-capable editors and clients:
 
 - Official MCP memory server (`@modelcontextprotocol/server-memory`)
 - OpenMemory / Mem0 MCP

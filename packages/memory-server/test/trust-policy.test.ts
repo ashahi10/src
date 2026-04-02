@@ -29,7 +29,7 @@ describe('trust policy (RFC §6.3)', () => {
     expect(raw.node.confidence).toBe(MAX_CONFIDENCE_WITHOUT_EVIDENCE)
     expect(raw.trustPolicy.confidenceCappedForMissingEvidence).toBe(true)
     expect(
-      isHighConfidence(raw.node.nodeId as import('@tengu/shared-types').MemoryNodeId, raw.node.confidence, raw.node.freshnessScore),
+      isHighConfidence(raw.node.nodeId as import('@mnemai/shared-types').MemoryNodeId, raw.node.confidence, raw.node.freshnessScore),
     ).toBe(false)
   })
 

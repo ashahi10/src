@@ -1,6 +1,6 @@
-# @tengu/verification-server
+# @mnemai/verification-server
 
-MCP server for **durable verification proofs** (sql.js SQLite). Records artifacts that can be linked from **Memory 2.0** evidence (e.g. `tengu://verification/{id}`).
+MCP server for **durable verification proofs** (sql.js SQLite). Records artifacts that can be linked from **Memory 2.0** evidence (e.g. `mnemai://verification/{id}`).
 
 ## Capabilities
 
@@ -17,11 +17,11 @@ MCP server for **durable verification proofs** (sql.js SQLite). Records artifact
 ## Run
 
 ```bash
-pnpm --filter @tengu/verification-server run build
+pnpm --filter @mnemai/verification-server run build
 node packages/verification-server/dist/index.js
 ```
 
-CLI: **`tengu-verification`**.
+CLI: **`mnemai-verification`**.
 
 ## Quality gate
 

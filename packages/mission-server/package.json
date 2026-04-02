@@ -1,12 +1,12 @@
 {
-  "name": "@tengu/mission-server",
+  "name": "@mnemai/mission-server",
   "version": "0.1.0",
   "description": "MCP server for durable mission objectives (sql.js SQLite)",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "tengu-mission": "dist/index.js"
+    "mnemai-mission": "dist/index.js"
   },
   "files": ["dist"],
   "scripts": {

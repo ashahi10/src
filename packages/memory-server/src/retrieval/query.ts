@@ -3,7 +3,7 @@ import type {
   MemoryNodeType,
   MemoryQueryResult,
   MemoryScope,
-} from '@tengu/shared-types'
+} from '@mnemai/shared-types'
 import { getNodesByIds, listNodes, listRecentNodeIds } from '../graph/node.js'
 import { isStale } from '../freshness/policy.js'
 import { rankNodes } from './ranker.js'

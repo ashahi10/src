@@ -20,7 +20,7 @@ describe('verification proofs', () => {
   })
 
   it('record and get proof with mission link', () => {
-    const p = recordProof('mission-1', 'All checks passed', 'urn:tengu:proof:1')
+    const p = recordProof('mission-1', 'All checks passed', 'urn:mnemai:proof:1')
     expect(p.verificationId).toBeTruthy()
     const g = getProof(p.verificationId)
     expect(g?.summary).toBe('All checks passed')

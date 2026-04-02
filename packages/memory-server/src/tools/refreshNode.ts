@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import type { MemoryNodeId } from '@tengu/shared-types'
+import type { MemoryNodeId } from '@mnemai/shared-types'
 import { refreshNode } from '../freshness/scorer.js'
 import { getNode, patchNodeMetadata } from '../graph/node.js'
 

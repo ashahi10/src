@@ -5,9 +5,9 @@ import { existsSync, unlinkSync } from 'node:fs'
 export function tempPaths(suffix: string) {
   const base = tmpdir()
   return {
-    memoryDb: join(base, `tengu-pdemo-mem-${suffix}.db`),
-    missionDb: join(base, `tengu-pdemo-mis-${suffix}.db`),
-    verificationDb: join(base, `tengu-pdemo-ver-${suffix}.db`),
+    memoryDb: join(base, `mnemai-pdemo-mem-${suffix}.db`),
+    missionDb: join(base, `mnemai-pdemo-mis-${suffix}.db`),
+    verificationDb: join(base, `mnemai-pdemo-ver-${suffix}.db`),
   }
 }
 

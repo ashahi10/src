@@ -1,7 +1,7 @@
 {
-  "name": "@tengu/shared-types",
+  "name": "@mnemai/shared-types",
   "version": "0.1.0",
-  "description": "Shared type definitions for the Tengu MCP server suite",
+  "description": "Shared type definitions for the Mnemai MCP server suite",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",

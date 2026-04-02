@@ -1,6 +1,6 @@
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
-import type { MemoryNodeId } from '@tengu/shared-types'
+import type { MemoryNodeId } from '@mnemai/shared-types'
 
 import { createNodeSchema, handleCreateNode } from './tools/createNode.js'
 import { queryMemorySchema, handleQueryMemory } from './tools/queryMemory.js'
@@ -16,7 +16,7 @@ import { getEdgesForNode } from './graph/edge.js'
 import { initDb, closeDb } from './graph/store.js'
 
 const server = new McpServer({
-  name: 'tengu-memory',
+  name: 'mnemai-memory',
   version: '0.1.0',
 })
 

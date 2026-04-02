@@ -5,7 +5,7 @@ import { closeDb, initDb } from './store.js'
 import { getProof, recordProof } from './proofRepo.js'
 
 const server = new McpServer({
-  name: 'tengu-verification',
+  name: 'mnemai-verification',
   version: '0.1.0',
 })
 

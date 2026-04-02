@@ -5,7 +5,7 @@ import type {
   MemoryNodeId,
   MemoryNodeType,
   MemoryScope,
-} from '@tengu/shared-types'
+} from '@mnemai/shared-types'
 import { HIGH_CONFIDENCE_MIN, MAX_CONFIDENCE_WITHOUT_EVIDENCE } from '../trustPolicy.js'
 import { computeDecayedFreshness } from '../freshness/scorer.js'
 import { getDb, scheduleSave } from './store.js'

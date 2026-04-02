@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Prints an MCP server config snippet with absolute paths for Memory 2.0.
- * Run from repo root after: pnpm --filter @tengu/memory-server run build
+ * Run from repo root after: pnpm --filter @mnemai/memory-server run build
  */
 import { existsSync } from 'node:fs'
 import { homedir } from 'node:os'
@@ -15,7 +15,7 @@ const entry = join(repoRoot, 'packages', 'memory-server', 'dist', 'index.js')
 if (!existsSync(entry)) {
   console.error(
     `memory_mcp_config: missing ${entry}\n` +
-      'Build first: pnpm --filter @tengu/memory-server run build\n' +
+      'Build first: pnpm --filter @mnemai/memory-server run build\n' +
       'Or run: pnpm run memory:onboard',
   )
   process.exit(1)
@@ -25,7 +25,7 @@ const dbPath = join(homedir(), '.tengu', 'memory.db')
 
 const snippet = {
   mcpServers: {
-    'tengu-memory': {
+    'mnemai-memory': {
       command: 'node',
       args: [entry],
       env: {

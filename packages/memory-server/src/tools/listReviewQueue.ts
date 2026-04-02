@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { MEMORY_SCOPES } from '@tengu/shared-types'
+import { MEMORY_SCOPES } from '@mnemai/shared-types'
 import { listReviewQueue } from '../graph/review.js'
 
 export const listReviewQueueSchema = z.object({

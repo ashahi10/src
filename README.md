@@ -10,9 +10,9 @@ MCP stacks often behave like **flat tool menus**: no shared place for objectives
 
 | Piece | Role | Persistence | CI gate |
 |-------|------|-------------|---------|
-| **Memory 2.0** (`@tengu/memory-server`) | Typed nodes, edges, hybrid search, review queue, optional embeddings | `TENGU_MEMORY_DB` (default `~/.tengu/memory.db`) | `verify:ship` (Vitest + smoke + **MCP stdio e2e**) |
-| **Mission** (`@tengu/mission-server`) | Create/list/get mission objectives | `TENGU_MISSION_DB` (default `~/.tengu/mission.db`) | `verify:ship` (unit + smoke + **stdio e2e**) |
-| **Verification** (`@tengu/verification-server`) | Record and fetch proof artifacts (optionally tied to a mission id) | `TENGU_VERIFICATION_DB` (default `~/.tengu/verification.db`) | `verify:ship` (unit + smoke + **stdio e2e**) |
+| **Memory 2.0** (`@mnemai/memory-server`) | Typed nodes, edges, hybrid search, review queue, optional embeddings | `TENGU_MEMORY_DB` (default `~/.tengu/memory.db`) | `verify:ship` (Vitest + smoke + **MCP stdio e2e**) |
+| **Mission** (`@mnemai/mission-server`) | Create/list/get mission objectives | `TENGU_MISSION_DB` (default `~/.tengu/mission.db`) | `verify:ship` (unit + smoke + **stdio e2e**) |
+| **Verification** (`@mnemai/verification-server`) | Record and fetch proof artifacts (optionally tied to a mission id) | `TENGU_VERIFICATION_DB` (default `~/.tengu/verification.db`) | `verify:ship` (unit + smoke + **stdio e2e**) |
 
 **How it fits:** hosts start each server as a **separate stdio process** (typical MCP). Our **platform demo** connects all three via the official SDK and runs one cross-server workflow (see below).
 
@@ -27,16 +27,16 @@ MCP stacks often behave like **flat tool menus**: no shared place for objectives
 | Bounded candidate search on large graphs (env-tunable) | Yes |
 | Freshness decay + refresh / review queue | Yes |
 | MCP resources (`memory://stats`, `memory://node/{id}`) | Yes |
-| Published npm CLI (`tengu-memory`) | Pack verified in CI; publish per [RELEASING.md](RELEASING.md) |
+| Published npm CLI (`mnemai-memory`) | Pack verified in CI; publish per [RELEASING.md](RELEASING.md) |
 
 ## Install & run
 
 ### From npm (Memory — after publish)
 
-Once **`@tengu/memory-server` is on the npm registry** (see [RELEASING.md](RELEASING.md)):
+Once **`@mnemai/memory-server` is on the npm registry** (see [RELEASING.md](RELEASING.md)):
 
 ```bash
-npx --yes @tengu/memory-server
+npx --yes @mnemai/memory-server
 ```
 
 MCP snippet:
@@ -44,9 +44,9 @@ MCP snippet:
 ```json
 {
   "mcpServers": {
-    "tengu-memory": {
+    "mnemai-memory": {
       "command": "npx",
-      "args": ["--yes", "@tengu/memory-server"],
+      "args": ["--yes", "@mnemai/memory-server"],
       "env": {
         "TENGU_MEMORY_DB": "/absolute/path/to/your-memory.db"
       }
@@ -55,7 +55,7 @@ MCP snippet:
 }
 ```
 
-Mission and verification CLIs (`tengu-mission`, `tengu-verification`) match the same pattern **after** those packages are published; today use repo build paths or clone flow below.
+Mission and verification CLIs (`mnemai-mission`, `mnemai-verification`) match the same pattern **after** those packages are published; today use repo build paths or clone flow below.
 
 ### From this repo (clone)
 

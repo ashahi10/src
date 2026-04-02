@@ -1,5 +1,5 @@
 {
-  "name": "tengu-mcp-suite",
+  "name": "mnemai-mcp-suite",
   "version": "0.1.0",
   "private": true,
   "description": "Tengu: memory-first MCP toolkit — Memory 2.0, Mission, Verification, plus CI-gated platform demo.",
@@ -8,14 +8,14 @@
   "scripts": {
     "build": "pnpm -r run build",
     "clean": "pnpm -r run clean",
-    "typecheck": "pnpm --filter @tengu/shared-types run build && pnpm -r run typecheck",
-    "dev:memory": "pnpm --filter @tengu/memory-server run dev",
-    "verify:memory": "pnpm --filter @tengu/memory-server run verify:ship",
-    "verify:mission": "pnpm --filter @tengu/mission-server run verify:ship",
-    "verify:verification": "pnpm --filter @tengu/verification-server run verify:ship",
+    "typecheck": "pnpm --filter @mnemai/shared-types run build && pnpm -r run typecheck",
+    "dev:memory": "pnpm --filter @mnemai/memory-server run dev",
+    "verify:memory": "pnpm --filter @mnemai/memory-server run verify:ship",
+    "verify:mission": "pnpm --filter @mnemai/mission-server run verify:ship",
+    "verify:verification": "pnpm --filter @mnemai/verification-server run verify:ship",
     "verify:npm-pack": "bash scripts/verify-npm-pack.sh",
-    "demo:platform": "pnpm --filter @tengu/platform-demo run demo",
-    "memory:onboard": "pnpm install && pnpm --filter @tengu/memory-server run build && node scripts/print-memory-mcp-config.mjs",
+    "demo:platform": "pnpm --filter @mnemai/platform-demo run demo",
+    "memory:onboard": "pnpm install && pnpm --filter @mnemai/memory-server run build && node scripts/print-memory-mcp-config.mjs",
     "memory:print-mcp": "node scripts/print-memory-mcp-config.mjs"
   },
   "engines": {

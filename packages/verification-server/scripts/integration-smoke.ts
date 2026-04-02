@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-const dir = mkdtempSync(join(tmpdir(), 'tengu-verification-smoke-'))
+const dir = mkdtempSync(join(tmpdir(), 'mnemai-verification-smoke-'))
 const dbPath = join(dir, 'verification.db')
 process.env.TENGU_VERIFICATION_DB = dbPath
 

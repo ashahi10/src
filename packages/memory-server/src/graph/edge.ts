@@ -4,7 +4,7 @@ import type {
   MemoryEdgeId,
   MemoryNodeId,
   RelationType,
-} from '@tengu/shared-types'
+} from '@mnemai/shared-types'
 import { getDb, scheduleSave } from './store.js'
 
 export function createEdge(params: {

@@ -96,12 +96,12 @@ assert(Number(stats.totalNodes) >= 2, 'stats totalNodes')
 assert(Number(stats.contradictionCount) >= 1, 'stats contradictionCount')
 assert(Number(stats.highConfidenceWithoutEvidenceCount) === 0, 'trust stats clean')
 
-const before = getNode(n1.nodeId as import('@tengu/shared-types').MemoryNodeId)
+const before = getNode(n1.nodeId as import('@mnemai/shared-types').MemoryNodeId)
 assert(before, 'getNode n1')
 const ref = parseJsonFromHandler(
   handleRefreshNode({ nodeId: String(n1.nodeId), reaffirmationNote: 'smoke test reaffirm' }),
 )
-const after = getNode(n1.nodeId as import('@tengu/shared-types').MemoryNodeId)
+const after = getNode(n1.nodeId as import('@mnemai/shared-types').MemoryNodeId)
 assert(typeof ref.newFreshness === 'number', 'refresh returns newFreshness')
 assert(ref.reaffirmationRecorded === true, 'refresh records note')
 assert(

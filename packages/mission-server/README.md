@@ -1,4 +1,4 @@
-# @tengu/mission-server
+# @mnemai/mission-server
 
 MCP server for **durable mission objectives** (sql.js SQLite, local file). Complements **Memory 2.0** and **verification** in the Tengu platform demo.
 
@@ -18,11 +18,11 @@ MCP server for **durable mission objectives** (sql.js SQLite, local file). Compl
 ## Run
 
 ```bash
-pnpm --filter @tengu/mission-server run build
+pnpm --filter @mnemai/mission-server run build
 node packages/mission-server/dist/index.js
 ```
 
-CLI: **`tengu-mission`** (shebang on `dist/index.js`).
+CLI: **`mnemai-mission`** (shebang on `dist/index.js`).
 
 ## Quality gate
 

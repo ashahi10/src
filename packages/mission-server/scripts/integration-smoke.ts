@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-const dir = mkdtempSync(join(tmpdir(), 'tengu-mission-smoke-'))
+const dir = mkdtempSync(join(tmpdir(), 'mnemai-mission-smoke-'))
 const dbPath = join(dir, 'mission.db')
 process.env.TENGU_MISSION_DB = dbPath
 

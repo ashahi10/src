@@ -114,7 +114,7 @@ async function main() {
         evidenceRefs: [
           {
             type: 'external',
-            uri: `tengu://mission/${missionId}`,
+            uri: `mnemai://mission/${missionId}`,
             label: 'mission objective',
           },
         ],
@@ -129,7 +129,7 @@ async function main() {
       arguments: {
         missionId,
         summary: 'Workflow checks: mission + memory + proof chain OK',
-        detailUri: `urn:tengu:platform-demo:${suffix}`,
+        detailUri: `urn:mnemai:platform-demo:${suffix}`,
       },
     })
     if (proofRes.isError) throw new Error('verification.record_proof failed')
@@ -143,7 +143,7 @@ async function main() {
         evidenceRefs: [
           {
             type: 'verification',
-            uri: `tengu://verification/${verificationId}`,
+            uri: `mnemai://verification/${verificationId}`,
             label: 'verification proof bundle',
           },
         ],

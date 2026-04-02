@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies @tengu/memory-server tarball: installable, CLI shebang, entry exists.
+# Verifies @mnemai/memory-server tarball: installable, CLI shebang, entry exists.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT/packages/memory-server"
@@ -13,11 +13,11 @@ trap cleanup EXIT
 cd "$TMP"
 npm init -y >/dev/null 2>&1
 npm install "$ROOT/packages/memory-server/$(basename "$TARBALL")" >/dev/null
-ENTRY="node_modules/@tengu/memory-server/dist/index.js"
+ENTRY="node_modules/@mnemai/memory-server/dist/index.js"
 test -f "$ENTRY"
 head -1 "$ENTRY" | grep -q '#!/usr/bin/env node'
 node -e "
-const p=require('./node_modules/@tengu/memory-server/package.json');
-if(p.bin['tengu-memory']!=='dist/index.js') process.exit(1);
+const p=require('./node_modules/@mnemai/memory-server/package.json');
+if(p.bin['mnemai-memory']!=='dist/index.js') process.exit(1);
 "
 echo "verify-npm-pack: OK ($(basename "$TARBALL"))"

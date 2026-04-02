@@ -1,6 +1,6 @@
-import type { MemoryNode, MemoryQueryResult, MemoryNodeId } from '@tengu/shared-types'
+import type { MemoryNode, MemoryQueryResult, MemoryNodeId } from '@mnemai/shared-types'
 import { getEdgesForNode } from '../graph/edge.js'
-import type { RelationType } from '@tengu/shared-types'
+import type { RelationType } from '@mnemai/shared-types'
 
 type RankingWeights = {
   relevance: number

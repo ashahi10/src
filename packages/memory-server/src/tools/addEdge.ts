@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { RELATION_TYPES } from '@tengu/shared-types'
-import type { MemoryNodeId } from '@tengu/shared-types'
+import { RELATION_TYPES } from '@mnemai/shared-types'
+import type { MemoryNodeId } from '@mnemai/shared-types'
 import { createEdge } from '../graph/edge.js'
 import { getNode } from '../graph/node.js'
 
