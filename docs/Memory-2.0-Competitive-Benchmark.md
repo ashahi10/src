@@ -2,7 +2,7 @@
 
 ## Scope
 
-This benchmark compares `@tengu/memory-server` against current MCP memory offerings commonly used in Cursor/Claude-style workflows:
+This benchmark compares `@tengu/memory-server` against current MCP memory offerings commonly used with MCP-capable editors and clients:
 
 - Official MCP memory server (`@modelcontextprotocol/server-memory`)
 - OpenMemory / Mem0 MCP
@@ -30,7 +30,7 @@ This benchmark compares `@tengu/memory-server` against current MCP memory offeri
 2. Contradiction modeling exists in the graph model, not hidden in embeddings.
 3. Freshness + confidence + evidence are combined in ranking.
 4. Local-first persistence with standard SQLite file format.
-5. Good fit for agentic CLI workflows that need deterministic memory behavior.
+5. Good fit for command-line and MCP-driven workflows that need deterministic memory behavior.
 
 ## Gaps To Close For Best-in-Class
 
@@ -44,7 +44,7 @@ This benchmark compares `@tengu/memory-server` against current MCP memory offeri
 
 Memory 2.0 should be positioned as:
 
-"A deterministic, evidence-aware, contradiction-resilient MCP memory layer for serious AI agents and CLI workflows, designed for production reliability and auditable reasoning."
+"A deterministic, evidence-aware, contradiction-resilient MCP memory layer for production use and auditable reasoning."
 
 ## References
 

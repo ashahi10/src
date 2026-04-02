@@ -4,71 +4,19 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@types/node':
+      specifier: ^22.10.0
+      version: 22.19.15
+
 importers:
 
-  .: {}
-
-  packages/contracts-server:
-    dependencies:
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.12.0
-        version: 1.29.0(zod@3.25.76)
-      sql.js:
-        specifier: ^1.12.0
-        version: 1.14.1
-      uuid:
-        specifier: ^11.1.0
-        version: 11.1.0
-      zod:
-        specifier: ^3.24.0
-        version: 3.25.76
+  .:
     devDependencies:
-      '@tengu/shared-types':
-        specifier: workspace:*
-        version: link:../shared-types
-      '@types/uuid':
-        specifier: ^10.0.0
-        version: 10.0.0
-      tsup:
-        specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.8)(tsx@4.21.0)(typescript@5.9.3)
-      tsx:
-        specifier: ^4.19.0
-        version: 4.21.0
-      typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
-
-  packages/cost-planner-server:
-    dependencies:
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.12.0
-        version: 1.29.0(zod@3.25.76)
-      sql.js:
-        specifier: ^1.12.0
-        version: 1.14.1
-      uuid:
-        specifier: ^11.1.0
-        version: 11.1.0
-      zod:
-        specifier: ^3.24.0
-        version: 3.25.76
-    devDependencies:
-      '@tengu/shared-types':
-        specifier: workspace:*
-        version: link:../shared-types
-      '@types/uuid':
-        specifier: ^10.0.0
-        version: 10.0.0
-      tsup:
-        specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.8)(tsx@4.21.0)(typescript@5.9.3)
-      tsx:
-        specifier: ^4.19.0
-        version: 4.21.0
-      typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.19.15
 
   packages/memory-server:
     dependencies:
@@ -89,7 +37,7 @@ importers:
         specifier: workspace:*
         version: link:../shared-types
       '@types/node':
-        specifier: ^22.10.0
+        specifier: 'catalog:'
         version: 22.19.15
       '@types/uuid':
         specifier: ^10.0.0
@@ -122,9 +70,9 @@ importers:
         specifier: ^3.24.0
         version: 3.25.76
     devDependencies:
-      '@tengu/shared-types':
-        specifier: workspace:*
-        version: link:../shared-types
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.19.15
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
@@ -137,31 +85,19 @@ importers:
       typescript:
         specifier: ^5.4.0
         version: 5.9.3
+      vitest:
+        specifier: ^3.0.0
+        version: 3.2.4(@types/node@22.19.15)(tsx@4.21.0)
 
-  packages/risk-server:
+  packages/platform-demo:
     dependencies:
       '@modelcontextprotocol/sdk':
         specifier: ^1.12.0
         version: 1.29.0(zod@3.25.76)
-      sql.js:
-        specifier: ^1.12.0
-        version: 1.14.1
-      uuid:
-        specifier: ^11.1.0
-        version: 11.1.0
-      zod:
-        specifier: ^3.24.0
-        version: 3.25.76
     devDependencies:
-      '@tengu/shared-types':
-        specifier: workspace:*
-        version: link:../shared-types
-      '@types/uuid':
-        specifier: ^10.0.0
-        version: 10.0.0
-      tsup:
-        specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.8)(tsx@4.21.0)(typescript@5.9.3)
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.19.15
       tsx:
         specifier: ^4.19.0
         version: 4.21.0
@@ -171,6 +107,9 @@ importers:
 
   packages/shared-types:
     devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.19.15
       tsup:
         specifier: ^8.0.0
         version: 8.5.1(postcss@8.5.8)(tsx@4.21.0)(typescript@5.9.3)
@@ -193,9 +132,9 @@ importers:
         specifier: ^3.24.0
         version: 3.25.76
     devDependencies:
-      '@tengu/shared-types':
-        specifier: workspace:*
-        version: link:../shared-types
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.19.15
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
@@ -208,6 +147,9 @@ importers:
       typescript:
         specifier: ^5.4.0
         version: 5.9.3
+      vitest:
+        specifier: ^3.0.0
+        version: 3.2.4(@types/node@22.19.15)(tsx@4.21.0)
 
 packages:
 

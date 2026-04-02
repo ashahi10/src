@@ -5,11 +5,17 @@ node_modules/
 dist/
 *.tsbuildinfo
 
+# Pack artifacts
+*.tgz
+
 # Environment and secrets
 .env
 .env.*
 !.env.example
 !.env.sample
+
+# Never commit npm auth tokens — use `npm login` (writes ~/.npmrc) or CI secrets
+.npmrc
 
 # SQLite databases (local runtime data)
 *.db

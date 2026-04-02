@@ -2,19 +2,28 @@
   "name": "tengu-mcp-suite",
   "version": "0.1.0",
   "private": true,
-  "description": "A suite of 6 MCP servers for advanced AI agent infrastructure: structured memory, mission planning, risk policy, verification, cost-aware planning, and multi-agent contracts.",
+  "description": "Tengu: memory-first MCP toolkit — Memory 2.0, Mission, Verification, plus CI-gated platform demo.",
   "license": "MIT",
   "author": "Aditya Shahi",
   "scripts": {
     "build": "pnpm -r run build",
     "clean": "pnpm -r run clean",
-    "typecheck": "pnpm -r run typecheck",
+    "typecheck": "pnpm --filter @tengu/shared-types run build && pnpm -r run typecheck",
     "dev:memory": "pnpm --filter @tengu/memory-server run dev",
-    "verify:memory": "pnpm --filter @tengu/memory-server run verify:ship"
+    "verify:memory": "pnpm --filter @tengu/memory-server run verify:ship",
+    "verify:mission": "pnpm --filter @tengu/mission-server run verify:ship",
+    "verify:verification": "pnpm --filter @tengu/verification-server run verify:ship",
+    "verify:npm-pack": "bash scripts/verify-npm-pack.sh",
+    "demo:platform": "pnpm --filter @tengu/platform-demo run demo",
+    "memory:onboard": "pnpm install && pnpm --filter @tengu/memory-server run build && node scripts/print-memory-mcp-config.mjs",
+    "memory:print-mcp": "node scripts/print-memory-mcp-config.mjs"
   },
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

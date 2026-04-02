@@ -1,84 +1,125 @@
-# Tengu MCP Suite
+# Tengu — memory-first MCP toolkit
 
-A suite of **6 Model Context Protocol (MCP) servers** that provide advanced AI agent infrastructure. Each server is a standalone, composable tool that works with any MCP-compatible client — Claude Code, Cursor, OpenAI agents, or custom frameworks.
+**Tengu** ships **three** local-first MCP servers that share one coherent workflow: **missions** (objectives), **memory** (evidence-linked graph), and **verification** (proof records). Together they let you ground automation in **durable state**, not one-off tool calls.
 
-## Servers
+## Problem
 
-| Server | Package | Description |
-|---|---|---|
-| **Memory 2.0** | [`@tengu/memory-server`](packages/memory-server/README.md) | Evidence-linked memory graph with typed nodes, freshness decay, and contradiction handling |
-| **Mission Engine** | `@tengu/mission-server` | Structured goal tracking with deterministic lifecycle state machine and verification gates |
-| **Risk Policy** | `@tengu/risk-server` | Centralized risk scoring (R1/R2/R3) with auditable approval modes |
-| **Verification** | `@tengu/verification-server` | First-class verification with proof artifacts, check bundles, and confidence scoring |
-| **Cost Planner** | `@tengu/cost-planner-server` | Preflight cost/quality/risk band selection with phase-aware budget envelopes |
-| **Multi-Agent Contracts** | `@tengu/contracts-server` | Formal subagent delegation contracts with validation, merge rules, and arbitration |
+MCP stacks often behave like **flat tool menus**: no shared place for objectives, facts, and auditable proof. Tengu addresses that with **small SQLite-backed servers** (portable `sql.js`), explicit **evidence references**, and a **tested multi-server demo** you can run from a clean checkout.
 
-## Architecture
+## What we built (and how)
 
-All servers share a common type library (`@tengu/shared-types`) and can optionally compose with each other at runtime via MCP tool calls. Each server works fully standalone.
+| Piece | Role | Persistence | CI gate |
+|-------|------|-------------|---------|
+| **Memory 2.0** (`@tengu/memory-server`) | Typed nodes, edges, hybrid search, review queue, optional embeddings | `TENGU_MEMORY_DB` (default `~/.tengu/memory.db`) | `verify:ship` (Vitest + smoke + **MCP stdio e2e**) |
+| **Mission** (`@tengu/mission-server`) | Create/list/get mission objectives | `TENGU_MISSION_DB` (default `~/.tengu/mission.db`) | `verify:ship` (unit + smoke + **stdio e2e**) |
+| **Verification** (`@tengu/verification-server`) | Record and fetch proof artifacts (optionally tied to a mission id) | `TENGU_VERIFICATION_DB` (default `~/.tengu/verification.db`) | `verify:ship` (unit + smoke + **stdio e2e**) |
 
-```
-packages/
-├── shared-types/          # Common types across all servers
-├── memory-server/         # Memory 2.0 — build first, most standalone
-├── mission-server/        # Mission Engine
-├── risk-server/           # Risk Policy Engine
-├── verification-server/   # Verification-First Runtime
-├── cost-planner-server/   # Cost-Intelligent Planner
-└── contracts-server/      # Multi-Agent Contract Framework
-```
+**How it fits:** hosts start each server as a **separate stdio process** (typical MCP). Our **platform demo** connects all three via the official SDK and runs one cross-server workflow (see below).
 
-## Quick Start
+## Capability matrix (Memory 2.0)
+
+| Capability | Supported |
+|------------|-----------|
+| Typed memory nodes | Yes |
+| Evidence references on nodes | Yes |
+| Graph edges (e.g. `contradicts`, `supports`) | Yes |
+| Hybrid retrieval (substring + BM25-style index + optional embeddings) | Yes |
+| Bounded candidate search on large graphs (env-tunable) | Yes |
+| Freshness decay + refresh / review queue | Yes |
+| MCP resources (`memory://stats`, `memory://node/{id}`) | Yes |
+| Published npm CLI (`tengu-memory`) | Pack verified in CI; publish per [RELEASING.md](RELEASING.md) |
+
+## Install & run
+
+### From npm (Memory — after publish)
+
+Once **`@tengu/memory-server` is on the npm registry** (see [RELEASING.md](RELEASING.md)):
 
 ```bash
-# Install dependencies
-pnpm install
-
-# Build all packages
-pnpm build
-
-# Run the memory server (stdio transport)
-pnpm dev:memory
+npx --yes @tengu/memory-server
 ```
 
-### Add to Claude Code
-
-Add any server to your Claude Code MCP config (`~/.claude.json` or project `.mcp.json`):
+MCP snippet:
 
 ```json
 {
   "mcpServers": {
     "tengu-memory": {
-      "command": "node",
-      "args": ["path/to/packages/memory-server/dist/index.js"]
+      "command": "npx",
+      "args": ["--yes", "@tengu/memory-server"],
+      "env": {
+        "TENGU_MEMORY_DB": "/absolute/path/to/your-memory.db"
+      }
     }
   }
 }
 ```
 
-## Tech Stack
+Mission and verification CLIs (`tengu-mission`, `tengu-verification`) match the same pattern **after** those packages are published; today use repo build paths or clone flow below.
 
-- **Runtime:** Node.js >= 18
-- **Language:** TypeScript (strict mode)
-- **MCP SDK:** `@modelcontextprotocol/sdk`
-- **Storage:** SQLite (portable `sql.js` default; native-optimized profile planned)
-- **Schema validation:** `zod`
-- **Monorepo:** pnpm workspaces
+### From this repo (clone)
 
-## Design Documents
+```bash
+pnpm install
+pnpm run build
+pnpm run memory:onboard
+```
 
-Each server has an RFC spec in [`docs/`](docs/):
+`memory:onboard` prints a ready-to-paste MCP block with **absolute** paths for Memory 2.0.
+
+**Dev (Memory, from source):** `pnpm dev:memory`
+
+## End-to-end platform demo (multi-server)
+
+Runs **three** built servers over stdio: mission → memory → verification → memory evidence link → query.
+
+```bash
+pnpm run build
+pnpm run demo:platform
+```
+
+You should see `platform-demo: OK` plus JSON with `missionId`, `nodeId`, and `verificationId`. This is the same shape of flow we recommend for product integrations: **objective in mission store**, **facts in memory with URIs**, **proof in verification store**, **evidence attached back on the memory node**.
+
+## Performance (test SLO)
+
+From automated tests: **≈2k nodes**, ranked query with `limit` 40 completes in **under 5 seconds** on CI hardware. See [docs/Memory-2.0-Performance.md](docs/Memory-2.0-Performance.md).
+
+## Security, privacy, operations
+
+- [Security & privacy](docs/Memory-2.0-Security-Privacy.md) — local DB files, when the network is used (embeddings only), backups.
+- [Host matrix](docs/Memory-2.0-Host-Matrix.md) — what is automated vs manually verified.
+- [Releasing / npm](RELEASING.md) — pack checks, publish, versioning.
+
+## Honest limits (Memory 2.0)
+
+Memory uses **sql.js** (no SQLite **FTS5**); lexical search uses a maintained **`node_search_tokens`** index plus BM25-style scoring, blended with substring match and **optional** embeddings (`TENGU_MEMORY_EMBED_*`, `memory.embed_node`). Large graphs use **bounded candidates** + recent seed (see [packages/memory-server/README.md](packages/memory-server/README.md#environment-variables)). These choices favor **portability and predictable behavior** over pretending to be a hosted vector database.
+
+## Documentation
 
 - [RFC: Memory 2.0](docs/RFC-Memory-2.0.md)
-- [Memory 2.0 Competitive Benchmark](docs/Memory-2.0-Competitive-Benchmark.md)
-- [Memory 2.0 Runtime Compatibility](docs/Memory-2.0-Runtime-Compatibility.md)
-- [Memory 2.0 Ship Checklist](docs/Memory-2.0-Ship-Checklist.md)
-- [Memory 2.0: SQL vs semantic / vector roadmap](docs/Memory-2.0-Architecture-SQL-vs-Semantic.md)
-- [RFC: Mission Engine](docs/RFC-Mission-Engine.md)
-- [RFC: Cost-Intelligent Planner](docs/RFC-Cost-Intelligent-Planner.md)
-- [RFC: Risk Policy Engine](docs/RFC-Risk-Policy-Engine.md)
-- [RFC: Verification-First Runtime](docs/RFC-Verification-First.md)
-- [RFC: Multi-Agent Contracts](docs/RFC-MultiAgent-Contracts.md)
+- [Competitive benchmark](docs/Memory-2.0-Competitive-Benchmark.md)
+- [Runtime compatibility](docs/Memory-2.0-Runtime-Compatibility.md)
+- [Security & privacy](docs/Memory-2.0-Security-Privacy.md) · [Host matrix](docs/Memory-2.0-Host-Matrix.md) · [Performance (test SLOs)](docs/Memory-2.0-Performance.md)
+- Packages: [memory-server](packages/memory-server/README.md), [mission-server](packages/mission-server/README.md), [verification-server](packages/verification-server/README.md)
+
+## Workspace CI (clean checkout)
+
+On every push/PR to `main`: **install → build all workspace packages → typecheck → verify Memory, Mission, Verification → verify npm pack for Memory → platform demo.**
+
+```bash
+pnpm install --frozen-lockfile
+pnpm run build
+pnpm run typecheck
+pnpm run verify:memory
+pnpm run verify:mission
+pnpm run verify:verification
+pnpm run verify:npm-pack
+pnpm run demo:platform
+```
+
+## Tech stack
+
+- Node **≥ 18**, TypeScript strict, pnpm workspaces, `@modelcontextprotocol/sdk`, `sql.js`, `zod`.
 
 ## License
 

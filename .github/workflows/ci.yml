@@ -1,0 +1,48 @@
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm run build
+
+      - name: Typecheck all packages
+        run: pnpm run typecheck
+
+      - name: Verify memory-server
+        run: pnpm run verify:memory
+
+      - name: Verify mission-server
+        run: pnpm run verify:mission
+
+      - name: Verify verification-server
+        run: pnpm run verify:verification
+
+      - name: Verify npm pack (@tengu/memory-server)
+        run: pnpm run verify:npm-pack
+
+      - name: Platform demo (mission + memory + verification)
+        run: pnpm run demo:platform

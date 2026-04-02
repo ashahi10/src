@@ -1,2 +1,9 @@
 packages:
-  - 'packages/*'
+  - 'packages/shared-types'
+  - 'packages/memory-server'
+  - 'packages/mission-server'
+  - 'packages/verification-server'
+  - 'packages/platform-demo'
+
+catalog:
+  '@types/node': ^22.10.0

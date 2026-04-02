@@ -1,6 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod'
+import { closeDb, initDb } from './store.js'
+import { createMission, getMission, listMissions } from './missionRepo.js'
 
 const server = new McpServer({
   name: 'tengu-mission',
@@ -9,73 +11,76 @@ const server = new McpServer({
 
 server.tool(
   'mission.create',
-  'Create a new mission with objective, constraints, budget, and success criteria',
-  { objective: z.string(), constraints: z.array(z.string()).optional() },
-  async (args) => ({
-    content: [{ type: 'text' as const, text: `[STUB] Mission created: ${args.objective}` }],
-  }),
-)
-
-server.tool(
-  'mission.plan',
-  'Transition mission to planned state with defined steps',
-  { missionId: z.string(), steps: z.array(z.object({ intent: z.string() })) },
-  async (args) => ({
-    content: [{ type: 'text' as const, text: `[STUB] Mission ${args.missionId} planned with ${args.steps.length} steps` }],
-  }),
-)
-
-server.tool(
-  'mission.execute_step',
-  'Execute and record a mission step with evidence',
-  { missionId: z.string(), stepId: z.string() },
-  async (args) => ({
-    content: [{ type: 'text' as const, text: `[STUB] Step ${args.stepId} executed for mission ${args.missionId}` }],
-  }),
-)
-
-server.tool(
-  'mission.verify',
-  'Run verification against success criteria',
-  { missionId: z.string() },
-  async (args) => ({
-    content: [{ type: 'text' as const, text: `[STUB] Verification run for mission ${args.missionId}` }],
-  }),
-)
-
-server.tool(
-  'mission.complete',
-  'Mark mission as completed (requires verification pass or waiver)',
-  { missionId: z.string() },
-  async (args) => ({
-    content: [{ type: 'text' as const, text: `[STUB] Mission ${args.missionId} completed` }],
-  }),
-)
-
-server.tool(
-  'mission.abort',
-  'Abort a mission with reason',
-  { missionId: z.string(), reason: z.string() },
-  async (args) => ({
-    content: [{ type: 'text' as const, text: `[STUB] Mission ${args.missionId} aborted: ${args.reason}` }],
-  }),
+  'Create a mission with an objective and optional constraints; returns missionId',
+  {
+    objective: z.string().min(1),
+    constraints: z.array(z.string()).optional(),
+  },
+  async args => {
+    const m = createMission(args.objective, args.constraints ?? [])
+    return {
+      content: [{ type: 'text' as const, text: JSON.stringify({ mission: m }, null, 2) }],
+    }
+  },
 )
 
 server.tool(
   'mission.get',
-  'Retrieve current mission state',
-  { missionId: z.string() },
-  async (args) => ({
-    content: [{ type: 'text' as const, text: `[STUB] Get mission ${args.missionId}` }],
-  }),
+  'Get a mission by id',
+  { missionId: z.string().min(1) },
+  async args => {
+    const m = getMission(args.missionId)
+    if (!m) {
+      return {
+        content: [{ type: 'text' as const, text: JSON.stringify({ error: 'mission_not_found' }, null, 2) }],
+        isError: true,
+      }
+    }
+    return {
+      content: [{ type: 'text' as const, text: JSON.stringify({ mission: m }, null, 2) }],
+    }
+  },
+)
+
+server.tool(
+  'mission.list',
+  'List missions newest first',
+  { limit: z.number().int().min(1).max(500).optional() },
+  async args => {
+    const rows = listMissions(args.limit ?? 50)
+    return {
+      content: [{ type: 'text' as const, text: JSON.stringify({ missions: rows, count: rows.length }, null, 2) }],
+    }
+  },
 )
 
 async function main() {
+  try {
+    await initDb()
+  } catch (error) {
+    console.error(
+      JSON.stringify({
+        error: 'mission_db_unavailable',
+        message: error instanceof Error ? error.message : String(error),
+      }),
+    )
+    process.exit(1)
+  }
+
   const transport = new StdioServerTransport()
   await server.connect(transport)
+
+  process.on('SIGINT', () => {
+    closeDb()
+    process.exit(0)
+  })
+  process.on('SIGTERM', () => {
+    closeDb()
+    process.exit(0)
+  })
 }
 
-main().catch((error) => {
+main().catch(error => {
   console.error('Fatal error starting mission server:', error)
   process.exit(1)
 })
