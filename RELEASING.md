@@ -53,7 +53,7 @@ After publish:
 npx --yes @mnemai/memory-server
 ```
 
-Configure MCP with `"command": "npx"` and `"args": ["--yes", "@mnemai/memory-server"]` (and optional `"env"` for `TENGU_MEMORY_DB` / embeddings). Use the same pattern for `mnemai-mission` / `mnemai-verification` when those packages are published.
+Configure MCP with `"command": "npx"` and `"args": ["--yes", "@mnemai/memory-server"]` (and optional `"env"` for `MNEMAI_MEMORY_DB` / `MNEMAI_MEMORY_EMBED_*`; legacy `TENGU_*` names still work). Use the same pattern for `mnemai-mission` / `mnemai-verification` when those packages are published.
 
 ## Scoped registry
 

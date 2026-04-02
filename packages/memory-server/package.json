@@ -1,6 +1,6 @@
 {
   "name": "@mnemai/memory-server",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "MCP server providing evidence-linked memory graph with typed nodes, freshness decay, and contradiction handling",
   "license": "MIT",
   "type": "module",

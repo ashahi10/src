@@ -18,10 +18,10 @@ export const queryMemorySchema = z.object({
     'Include BM25-style portable token index in hybrid rank (default true when index exists).',
   ),
   useSemantic: z.boolean().optional().describe(
-    'Allow query-time embedding call when TENGU_MEMORY_EMBED_* is configured (default true).',
+    'Allow query-time embedding call when MNEMAI_MEMORY_EMBED_* (or TENGU_MEMORY_EMBED_*) is configured (default true).',
   ),
   fullScan: z.boolean().optional().describe(
-    'Load the entire filtered graph for ranking (slower, strongest recall). Default uses index-bounded candidates when the graph is larger than TENGU_MEMORY_QUERY_FULL_SCAN_MAX_NODES.',
+    'Load the entire filtered graph for ranking (slower, strongest recall). Default uses index-bounded candidates when the graph is larger than MNEMAI_MEMORY_QUERY_FULL_SCAN_MAX_NODES (or TENGU_* alias).',
   ),
 })
 

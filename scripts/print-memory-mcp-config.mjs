@@ -3,7 +3,7 @@
  * Prints an MCP server config snippet with absolute paths for Memory 2.0.
  * Run from repo root after: pnpm --filter @mnemai/memory-server run build
  */
-import { existsSync } from 'node:fs'
+import { existsSync, mkdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -21,7 +21,16 @@ if (!existsSync(entry)) {
   process.exit(1)
 }
 
-const dbPath = join(homedir(), '.tengu', 'memory.db')
+function defaultMemoryDbPath() {
+  const h = homedir()
+  const legacy = join(h, '.tengu', 'memory.db')
+  if (existsSync(legacy)) return legacy
+  const dir = join(h, '.mnemai')
+  mkdirSync(dir, { recursive: true })
+  return join(dir, 'memory.db')
+}
+
+const dbPath = defaultMemoryDbPath()
 
 const snippet = {
   mcpServers: {
@@ -29,7 +38,7 @@ const snippet = {
       command: 'node',
       args: [entry],
       env: {
-        TENGU_MEMORY_DB: dbPath,
+        MNEMAI_MEMORY_DB: dbPath,
       },
     },
   },

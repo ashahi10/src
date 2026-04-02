@@ -7,7 +7,8 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const pkgRoot = join(fileURLToPath(new URL('.', import.meta.url)), '..')
-const dbPath = process.env.TENGU_MEMORY_DB ?? join(pkgRoot, '.smoke-memory.db')
+const dbPath =
+  process.env.MNEMAI_MEMORY_DB ?? process.env.TENGU_MEMORY_DB ?? join(pkgRoot, '.smoke-memory.db')
 
 if (existsSync(dbPath)) {
   try {
@@ -16,7 +17,7 @@ if (existsSync(dbPath)) {
     // ignore
   }
 }
-process.env.TENGU_MEMORY_DB = dbPath
+process.env.MNEMAI_MEMORY_DB = dbPath
 
 const { initDb, closeDb } = await import('../src/graph/store.js')
 const { handleCreateNode } = await import('../src/tools/createNode.js')

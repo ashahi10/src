@@ -95,7 +95,7 @@ Injection includes provenance metadata so agents can assess memory trustworthine
 
 ## 9) Storage
 
-SQLite — zero-config, local persistence. Database stored at `~/.tengu/memory.db` by default (configurable via `TENGU_MEMORY_DB` env var).
+SQLite — zero-config, local persistence. Default path **`~/.mnemai/memory.db`** (new installs), or existing **`~/.tengu/memory.db`** if present; override with **`MNEMAI_MEMORY_DB`** or legacy **`TENGU_MEMORY_DB`**.
 
 **Reference stack:** native `better-sqlite3` on supported Node LTS. **Current package build** uses `sql.js` (WASM SQLite) so the server runs without native compilation; the file format remains standard SQLite.
 

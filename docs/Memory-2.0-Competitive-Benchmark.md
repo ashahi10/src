@@ -12,7 +12,7 @@ This benchmark compares `@mnemai/memory-server` against current MCP memory offer
 
 ## Capability Matrix
 
-| Capability | Tengu Memory 2.0 | Official MCP Memory | OpenMemory/Mem0 | mcp-brain-tools | mcp-memory-libsql |
+| Capability | Mnemai Memory 2.0 | Official MCP Memory | OpenMemory/Mem0 | mcp-brain-tools | mcp-memory-libsql |
 |---|---|---|---|---|---|
 | Typed memory nodes | Yes (strict enums) | Basic entities/types | Generic memories/topics | Entity/observation model | Entity/relation model |
 | Explicit evidence references | Yes | No first-class evidence links | Limited metadata-oriented | Limited | Limited |

@@ -1,4 +1,5 @@
 import type { MemoryNodeId } from '@mnemai/shared-types'
+import { preferMnemaiEnv } from '../envMemory.js'
 
 export type QueryRetrievalBudget = {
   /** At or below this node count, load the full graph (simplest recall). */
@@ -16,12 +17,30 @@ function parseNonNegativeInt(raw: string | undefined, fallback: number): number 
   return n
 }
 
-/** `TENGU_MEMORY_QUERY_FULL_SCAN_MAX_NODES=0` means always use smart path when index has hits (tests only). */
+/** `MNEMAI_MEMORY_QUERY_*` or `TENGU_MEMORY_QUERY_*`: `*_FULL_SCAN_MAX_NODES=0` means always use smart path when index has hits (tests only). */
 export function parseQueryRetrievalBudget(): QueryRetrievalBudget {
   return {
-    fullScanMaxNodes: parseNonNegativeInt(process.env.TENGU_MEMORY_QUERY_FULL_SCAN_MAX_NODES, 1600),
-    indexCandidateCapFloor: Math.max(1, parseNonNegativeInt(process.env.TENGU_MEMORY_QUERY_INDEX_CANDIDATE_CAP, 600)),
-    recentSeedSize: parseNonNegativeInt(process.env.TENGU_MEMORY_QUERY_RECENT_SEED, 200),
+    fullScanMaxNodes: parseNonNegativeInt(
+      preferMnemaiEnv(
+        'MNEMAI_MEMORY_QUERY_FULL_SCAN_MAX_NODES',
+        'TENGU_MEMORY_QUERY_FULL_SCAN_MAX_NODES',
+      ),
+      1600,
+    ),
+    indexCandidateCapFloor: Math.max(
+      1,
+      parseNonNegativeInt(
+        preferMnemaiEnv(
+          'MNEMAI_MEMORY_QUERY_INDEX_CANDIDATE_CAP',
+          'TENGU_MEMORY_QUERY_INDEX_CANDIDATE_CAP',
+        ),
+        600,
+      ),
+    ),
+    recentSeedSize: parseNonNegativeInt(
+      preferMnemaiEnv('MNEMAI_MEMORY_QUERY_RECENT_SEED', 'TENGU_MEMORY_QUERY_RECENT_SEED'),
+      200,
+    ),
   }
 }
 

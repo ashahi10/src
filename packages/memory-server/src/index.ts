@@ -17,7 +17,7 @@ import { initDb, closeDb } from './graph/store.js'
 
 const server = new McpServer({
   name: 'mnemai-memory',
-  version: '0.1.2',
+  version: '0.1.3',
 })
 
 server.tool(
@@ -78,7 +78,7 @@ server.tool(
 
 server.tool(
   'memory.embed_node',
-  'Store an embedding vector for a node (requires TENGU_MEMORY_EMBED_URL + TENGU_MEMORY_EMBED_KEY); enables semantic channel in memory.query',
+  'Store an embedding vector for a node (requires MNEMAI_MEMORY_EMBED_URL + MNEMAI_MEMORY_EMBED_KEY, or legacy TENGU_* names); enables semantic channel in memory.query',
   embedNodeSchema.shape,
   async (args) => handleEmbedNode(args),
 )
@@ -153,7 +153,7 @@ Usage: mnemai-memory
   Starts the Model Context Protocol server on stdin/stdout (no HTTP port).
 
 Docs: https://www.npmjs.com/package/@mnemai/memory-server
-Environment: TENGU_MEMORY_DB (SQLite path), TENGU_MEMORY_EMBED_* (optional embeddings).
+Environment: MNEMAI_MEMORY_DB (SQLite path; legacy TENGU_MEMORY_DB supported), MNEMAI_MEMORY_EMBED_* (optional embeddings; TENGU_* aliases).
 `)
     process.exit(0)
   }

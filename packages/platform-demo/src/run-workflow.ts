@@ -80,7 +80,7 @@ async function main() {
   let verificationC: Client | undefined
 
   try {
-    const m = await connectServer('memory', memoryEntry, { TENGU_MEMORY_DB: memoryDb })
+    const m = await connectServer('memory', memoryEntry, { MNEMAI_MEMORY_DB: memoryDb })
     memoryC = m.client
     memoryT = m.transport
     const mi = await connectServer('mission', missionEntry, { TENGU_MISSION_DB: missionDb })

@@ -5,7 +5,7 @@
 ## Capabilities
 
 | Area | What you get |
-|------|----------------|
+|------|--------------|
 | Structure | Typed nodes, edges (`supports`, `contradicts`, …), evidence rows |
 | Retrieval | Hybrid **substring + BM25-style token index** + **optional embeddings**; bounded candidates on large graphs |
 | Trust / time | Freshness decay, refresh, spaced **review queue**, confidence rules with evidence |
@@ -26,7 +26,7 @@ MCP config (set an absolute DB path):
     "mnemai-memory": {
       "command": "npx",
       "args": ["--yes", "@mnemai/memory-server"],
-      "env": { "TENGU_MEMORY_DB": "/absolute/path/to/memory.db" }
+      "env": { "MNEMAI_MEMORY_DB": "/absolute/path/to/memory.db" }
     }
   }
 }
@@ -62,19 +62,21 @@ node packages/memory-server/dist/index.js
 
 ## Environment variables
 
+Use the **`MNEMAI_MEMORY_*`** names below. The same settings also accept legacy **`TENGU_MEMORY_*`** names (for older configs).
+
 | Variable | Purpose |
 |----------|---------|
-| `TENGU_MEMORY_DB` | Path to the SQLite file (default: `~/.tengu/memory.db`) |
-| `TENGU_MEMORY_SYNC_WRITES=1` | Flush to disk immediately after writes (stronger durability, slower) |
-| `TENGU_MEMORY_MATCH_LEXICAL` | Weight for substring overlap in hybrid `matchScore` (default `0.35`; renormalized with index/semantic) |
-| `TENGU_MEMORY_MATCH_INDEX` | Weight for BM25-style token index (default `0.45`) |
-| `TENGU_MEMORY_MATCH_SEMANTIC` | Weight for embedding cosine channel when enabled (default `0.2`) |
-| `TENGU_MEMORY_EMBED_URL` | OpenAI-compatible **POST** embeddings endpoint |
-| `TENGU_MEMORY_EMBED_KEY` | Bearer token for that endpoint |
-| `TENGU_MEMORY_EMBED_MODEL` | Embedding model id (default `text-embedding-3-small`) |
-| `TENGU_MEMORY_QUERY_FULL_SCAN_MAX_NODES` | Graphs larger than this use **index-bounded candidates** + recent seed (default `1600`; `0` = always use smart path when the index matches) |
-| `TENGU_MEMORY_QUERY_INDEX_CANDIDATE_CAP` | Floor for max BM25-hit ids per query; effective cap is `max(this, limit×25)` (default `600`) |
-| `TENGU_MEMORY_QUERY_RECENT_SEED` | Union this many most recently updated nodes (after filters) (default `200`) |
+| `MNEMAI_MEMORY_DB` | Path to the SQLite file. If unset: uses existing `~/.tengu/memory.db` when present, otherwise creates **`~/.mnemai/memory.db`**. |
+| `MNEMAI_MEMORY_SYNC_WRITES=1` | Flush to disk immediately after writes (stronger durability, slower). Legacy: `TENGU_MEMORY_SYNC_WRITES=1`. |
+| `MNEMAI_MEMORY_MATCH_LEXICAL` | Weight for substring overlap in hybrid `matchScore` (default `0.35`; renormalized with index/semantic). Legacy `TENGU_*` alias. |
+| `MNEMAI_MEMORY_MATCH_INDEX` | Weight for BM25-style token index (default `0.45`). Legacy alias. |
+| `MNEMAI_MEMORY_MATCH_SEMANTIC` | Weight for embedding cosine channel when enabled (default `0.2`). Legacy alias. |
+| `MNEMAI_MEMORY_EMBED_URL` | OpenAI-compatible **POST** embeddings endpoint. Legacy alias. |
+| `MNEMAI_MEMORY_EMBED_KEY` | Bearer token for that endpoint. Legacy alias. |
+| `MNEMAI_MEMORY_EMBED_MODEL` | Embedding model id (default `text-embedding-3-small`). Legacy alias. |
+| `MNEMAI_MEMORY_QUERY_FULL_SCAN_MAX_NODES` | Graphs larger than this use **index-bounded candidates** + recent seed (default `1600`; `0` = always use smart path when the index matches). Legacy alias. |
+| `MNEMAI_MEMORY_QUERY_INDEX_CANDIDATE_CAP` | Floor for max BM25-hit ids per query; effective cap is `max(this, limit×25)` (default `600`). Legacy alias. |
+| `MNEMAI_MEMORY_QUERY_RECENT_SEED` | Union this many most recently updated nodes (after filters) (default `200`). Legacy alias. |
 
 ## MCP config (clone / local `node`)
 
@@ -84,7 +86,7 @@ node packages/memory-server/dist/index.js
     "mnemai-memory": {
       "command": "node",
       "args": ["/absolute/path/to/repo/packages/memory-server/dist/index.js"],
-      "env": { "TENGU_MEMORY_DB": "/absolute/path/to/my-memory.db" }
+      "env": { "MNEMAI_MEMORY_DB": "/absolute/path/to/my-memory.db" }
     }
   }
 }
@@ -103,7 +105,7 @@ Use **absolute paths** — hosts often use a cwd that is not your repo.
 | `memory.refresh` | Reaffirm / boost freshness; optional `reaffirmationNote` |
 | `memory.list_review_queue` | Spaced verification queue |
 | `memory.verify_node` | Confirm a memory still holds |
-| `memory.embed_node` | Store embedding (requires `TENGU_MEMORY_EMBED_*`) |
+| `memory.embed_node` | Store embedding (requires `MNEMAI_MEMORY_EMBED_*` or legacy `TENGU_MEMORY_EMBED_*`) |
 | `memory.stats` | Aggregate stats (+ index / embedding counts) |
 
 ## Resources

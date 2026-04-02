@@ -5,6 +5,7 @@ describe('failure modes', () => {
   afterEach(() => {
     closeDb()
     delete process.env.TENGU_MEMORY_DB
+    delete process.env.MNEMAI_MEMORY_DB
   })
 
   it('throws structured startup error when db path is invalid', async () => {

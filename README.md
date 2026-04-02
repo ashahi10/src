@@ -10,7 +10,7 @@ MCP stacks often behave like **flat tool menus**: no shared place for objectives
 
 | Piece | Role | Persistence | CI gate |
 |-------|------|-------------|---------|
-| **Memory 2.0** (`@mnemai/memory-server`) | Typed nodes, edges, hybrid search, review queue, optional embeddings | `TENGU_MEMORY_DB` (default `~/.tengu/memory.db`) | `verify:ship` (Vitest + smoke + **MCP stdio e2e**) |
+| **Memory 2.0** (`@mnemai/memory-server`) | Typed nodes, edges, hybrid search, review queue, optional embeddings | `MNEMAI_MEMORY_DB` (default **`~/.mnemai/memory.db`**; uses existing `~/.tengu/memory.db` if present; legacy `TENGU_MEMORY_DB` still works) | `verify:ship` (Vitest + smoke + **MCP stdio e2e**) |
 | **Mission** (`@mnemai/mission-server`) | Create/list/get mission objectives | `TENGU_MISSION_DB` (default `~/.tengu/mission.db`) | `verify:ship` (unit + smoke + **stdio e2e**) |
 | **Verification** (`@mnemai/verification-server`) | Record and fetch proof artifacts (optionally tied to a mission id) | `TENGU_VERIFICATION_DB` (default `~/.tengu/verification.db`) | `verify:ship` (unit + smoke + **stdio e2e**) |
 
@@ -48,7 +48,7 @@ MCP snippet:
       "command": "npx",
       "args": ["--yes", "@mnemai/memory-server"],
       "env": {
-        "TENGU_MEMORY_DB": "/absolute/path/to/your-memory.db"
+        "MNEMAI_MEMORY_DB": "/absolute/path/to/your-memory.db"
       }
     }
   }
@@ -92,7 +92,7 @@ From automated tests: **≈2k nodes**, ranked query with `limit` 40 completes in
 
 ## Honest limits (Memory 2.0)
 
-Memory uses **sql.js** (no SQLite **FTS5**); lexical search uses a maintained **`node_search_tokens`** index plus BM25-style scoring, blended with substring match and **optional** embeddings (`TENGU_MEMORY_EMBED_*`, `memory.embed_node`). Large graphs use **bounded candidates** + recent seed (see [packages/memory-server/README.md](packages/memory-server/README.md#environment-variables)). These choices favor **portability and predictable behavior** over pretending to be a hosted vector database.
+Memory uses **sql.js** (no SQLite **FTS5**); lexical search uses a maintained **`node_search_tokens`** index plus BM25-style scoring, blended with substring match and **optional** embeddings (`MNEMAI_MEMORY_EMBED_*` / legacy `TENGU_MEMORY_EMBED_*`, `memory.embed_node`). Large graphs use **bounded candidates** + recent seed (see [packages/memory-server/README.md](packages/memory-server/README.md#environment-variables)). These choices favor **portability and predictable behavior** over pretending to be a hosted vector database.
 
 ## Documentation
 

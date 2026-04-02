@@ -9,5 +9,5 @@ These numbers come from **automated tests** in `packages/memory-server`, not fro
 **Notes**
 
 - CI hardware varies; use this as a **regression guard**, not a customer SLA.
-- Large graphs use **bounded candidate retrieval** by default; see environment variables in the package README (`TENGU_MEMORY_QUERY_*`).
+- Large graphs use **bounded candidate retrieval** by default; see environment variables in the package README (`MNEMAI_MEMORY_QUERY_*`, legacy `TENGU_MEMORY_QUERY_*`).
 - Optional **embeddings** add **network latency** per query when enabled; not included in the 5s gate above.

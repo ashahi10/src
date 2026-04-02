@@ -1,33 +1,24 @@
 import initSqlJs, { type Database } from 'sql.js'
-import { homedir } from 'node:os'
-import { join } from 'node:path'
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { backfillSearchIndex } from '../retrieval/tokenIndex.js'
+import { getMemoryDbPath, isMemorySyncWrites } from '../envMemory.js'
 
 /**
  * Persistence uses sql.js (WASM SQLite) so the server runs without native addons.
  * RFC §9 names better-sqlite3; that is ideal for Node LTS when native builds succeed.
- * The on-disk file is standard SQLite and remains at ~/.tengu/memory.db or TENGU_MEMORY_DB.
+ * Default DB: ~/.mnemai/memory.db (new), or existing ~/.tengu/memory.db if present; override with MNEMAI_MEMORY_DB or TENGU_MEMORY_DB.
  */
 
 let db: Database | null = null
 let dbPath: string | null = null
 let saveTimer: ReturnType<typeof setTimeout> | null = null
-const SYNC_WRITES = process.env.TENGU_MEMORY_SYNC_WRITES === '1'
-
-function getDbPath(): string {
-  const envPath = process.env.TENGU_MEMORY_DB
-  if (envPath) return envPath
-  const dir = join(homedir(), '.tengu')
-  mkdirSync(dir, { recursive: true })
-  return join(dir, 'memory.db')
-}
+const SYNC_WRITES = isMemorySyncWrites()
 
 export async function initDb(): Promise<Database> {
   if (db) return db
 
   const SQL = await initSqlJs()
-  dbPath = getDbPath()
+  dbPath = getMemoryDbPath()
 
   if (existsSync(dbPath)) {
     const buffer = readFileSync(dbPath)

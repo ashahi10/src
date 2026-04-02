@@ -16,7 +16,7 @@ export async function handleEmbedNode(args: z.infer<typeof embedNodeSchema>) {
           type: 'text' as const,
           text: JSON.stringify({
             error: 'embeddings_not_configured',
-            hint: 'Set TENGU_MEMORY_EMBED_URL (OpenAI-compatible embeddings endpoint), TENGU_MEMORY_EMBED_KEY, and optionally TENGU_MEMORY_EMBED_MODEL.',
+            hint: 'Set MNEMAI_MEMORY_EMBED_URL (OpenAI-compatible embeddings endpoint), MNEMAI_MEMORY_EMBED_KEY, and optionally MNEMAI_MEMORY_EMBED_MODEL (legacy TENGU_MEMORY_EMBED_* still work).',
           }, null, 2),
         },
       ],

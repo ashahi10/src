@@ -1,14 +1,19 @@
 import type { Database } from 'sql.js'
 import { getDb, scheduleSave } from '../graph/store.js'
+import { preferMnemaiEnv } from '../envMemory.js'
 
 const DEFAULT_MODEL = 'text-embedding-3-small'
 
 export function isEmbeddingsConfigured(): boolean {
-  return Boolean(process.env.TENGU_MEMORY_EMBED_URL?.trim() && process.env.TENGU_MEMORY_EMBED_KEY?.trim())
+  const url = preferMnemaiEnv('MNEMAI_MEMORY_EMBED_URL', 'TENGU_MEMORY_EMBED_URL')
+  const key = preferMnemaiEnv('MNEMAI_MEMORY_EMBED_KEY', 'TENGU_MEMORY_EMBED_KEY')
+  return Boolean(url && key)
 }
 
 export function getEmbeddingModel(): string {
-  return process.env.TENGU_MEMORY_EMBED_MODEL?.trim() || DEFAULT_MODEL
+  return (
+    preferMnemaiEnv('MNEMAI_MEMORY_EMBED_MODEL', 'TENGU_MEMORY_EMBED_MODEL') || DEFAULT_MODEL
+  )
 }
 
 /**
@@ -16,8 +21,8 @@ export function getEmbeddingModel(): string {
  */
 export async function embedText(text: string): Promise<Float32Array | null> {
   if (!isEmbeddingsConfigured()) return null
-  const url = process.env.TENGU_MEMORY_EMBED_URL!.trim()
-  const key = process.env.TENGU_MEMORY_EMBED_KEY!.trim()
+  const url = preferMnemaiEnv('MNEMAI_MEMORY_EMBED_URL', 'TENGU_MEMORY_EMBED_URL')!
+  const key = preferMnemaiEnv('MNEMAI_MEMORY_EMBED_KEY', 'TENGU_MEMORY_EMBED_KEY')!
   const model = getEmbeddingModel()
 
   const body = JSON.stringify({ model, input: text.slice(0, 8000) })

@@ -1,6 +1,7 @@
 import type { MemoryNode, MemoryQueryResult, MemoryNodeId } from '@mnemai/shared-types'
 import { getEdgesForNode } from '../graph/edge.js'
 import type { RelationType } from '@mnemai/shared-types'
+import { preferMnemaiEnv } from '../envMemory.js'
 
 type RankingWeights = {
   relevance: number
@@ -33,18 +34,26 @@ export type HybridMatchOptions = {
   useSemanticInBlend?: boolean
 }
 
-function parseEnvWeight(name: string, fallback: number): number {
-  const v = process.env[name]
-  if (v == null || v === '') return fallback
-  const n = Number(v)
+function parseEnvWeightRaw(raw: string | undefined, fallback: number): number {
+  if (raw == null || raw === '') return fallback
+  const n = Number(raw)
   if (!Number.isFinite(n) || n < 0) return fallback
   return n
 }
 
 function matchBlendWeights(useSemantic: boolean): { lex: number; idx: number; sem: number } {
-  let lex = parseEnvWeight('TENGU_MEMORY_MATCH_LEXICAL', 0.35)
-  let idx = parseEnvWeight('TENGU_MEMORY_MATCH_INDEX', 0.45)
-  let sem = parseEnvWeight('TENGU_MEMORY_MATCH_SEMANTIC', 0.2)
+  let lex = parseEnvWeightRaw(
+    preferMnemaiEnv('MNEMAI_MEMORY_MATCH_LEXICAL', 'TENGU_MEMORY_MATCH_LEXICAL'),
+    0.35,
+  )
+  let idx = parseEnvWeightRaw(
+    preferMnemaiEnv('MNEMAI_MEMORY_MATCH_INDEX', 'TENGU_MEMORY_MATCH_INDEX'),
+    0.45,
+  )
+  let sem = parseEnvWeightRaw(
+    preferMnemaiEnv('MNEMAI_MEMORY_MATCH_SEMANTIC', 'TENGU_MEMORY_MATCH_SEMANTIC'),
+    0.2,
+  )
   if (!useSemantic) {
     const total = lex + idx
     if (total <= 0) return { lex: 0.55, idx: 0.45, sem: 0 }

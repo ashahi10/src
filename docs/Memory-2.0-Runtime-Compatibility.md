@@ -15,8 +15,8 @@ Memory 2.0 uses a dual-target strategy:
 
 ## Environment Variables
 
-- `TENGU_MEMORY_DB` - custom path for SQLite file.
-- `TENGU_MEMORY_SYNC_WRITES=1` - force synchronous persistence writes for stronger durability.
+- `MNEMAI_MEMORY_DB` — custom path for SQLite file (legacy: `TENGU_MEMORY_DB`).
+- `MNEMAI_MEMORY_SYNC_WRITES=1` — force synchronous persistence writes for stronger durability (legacy: `TENGU_MEMORY_SYNC_WRITES=1`).
 
 ## Recommended Runtime Profiles
 

@@ -2,6 +2,13 @@
 
 All notable changes to `@mnemai/memory-server` are documented here.
 
+## [0.1.3] - 2026-04-02
+
+### Changed
+
+- **Branding / env:** Prefer **`MNEMAI_MEMORY_*`** environment variables (documented on npm README). Legacy **`TENGU_MEMORY_*`** names remain supported for all memory tuning and embeddings.
+- **Default DB path:** New installs use **`~/.mnemai/memory.db`**. If **`~/.tengu/memory.db`** already exists, it is used until you migrate or set **`MNEMAI_MEMORY_DB`** explicitly.
+
 ## [0.1.2] - 2026-04-02
 
 ### Fixed
