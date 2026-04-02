@@ -2,6 +2,12 @@
 
 All notable changes to `@mnemai/memory-server` are documented here.
 
+## [0.1.2] - 2026-04-02
+
+### Fixed
+
+- Include **`LICENSE`** (MIT) in the published tarball via the `files` list so npm consumers get an explicit license file.
+
 ## [0.1.1] - 2026-04-02
 
 ### Fixed

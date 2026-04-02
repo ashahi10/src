@@ -2,7 +2,7 @@
   "name": "mnemai-mcp-suite",
   "version": "0.1.0",
   "private": true,
-  "description": "Tengu: memory-first MCP toolkit — Memory 2.0, Mission, Verification, plus CI-gated platform demo.",
+  "description": "Mnemai: memory-first MCP toolkit — Memory 2.0, Mission, Verification, plus CI-gated platform demo.",
   "license": "MIT",
   "author": "Aditya Shahi",
   "scripts": {

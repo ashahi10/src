@@ -17,7 +17,7 @@ import { initDb, closeDb } from './graph/store.js'
 
 const server = new McpServer({
   name: 'mnemai-memory',
-  version: '0.1.1',
+  version: '0.1.2',
 })
 
 server.tool(

@@ -1,10 +1,10 @@
-# Tengu — memory-first MCP toolkit
+# Mnemai — memory-first MCP toolkit
 
-**Tengu** ships **three** local-first MCP servers that share one coherent workflow: **missions** (objectives), **memory** (evidence-linked graph), and **verification** (proof records). Together they let you ground automation in **durable state**, not one-off tool calls.
+**Mnemai** ships **three** local-first MCP servers that share one coherent workflow: **missions** (objectives), **memory** (evidence-linked graph), and **verification** (proof records). Together they let you ground automation in **durable state**, not one-off tool calls. Published on npm under the **`@mnemai`** scope (Memory 2.0 is [`@mnemai/memory-server`](https://www.npmjs.com/package/@mnemai/memory-server)).
 
 ## Problem
 
-MCP stacks often behave like **flat tool menus**: no shared place for objectives, facts, and auditable proof. Tengu addresses that with **small SQLite-backed servers** (portable `sql.js`), explicit **evidence references**, and a **tested multi-server demo** you can run from a clean checkout.
+MCP stacks often behave like **flat tool menus**: no shared place for objectives, facts, and auditable proof. Mnemai addresses that with **small SQLite-backed servers** (portable `sql.js`), explicit **evidence references**, and a **tested multi-server demo** you can run from a clean checkout.
 
 ## What we built (and how)
 
@@ -27,13 +27,13 @@ MCP stacks often behave like **flat tool menus**: no shared place for objectives
 | Bounded candidate search on large graphs (env-tunable) | Yes |
 | Freshness decay + refresh / review queue | Yes |
 | MCP resources (`memory://stats`, `memory://node/{id}`) | Yes |
-| Published npm CLI (`mnemai-memory`) | Pack verified in CI; publish per [RELEASING.md](RELEASING.md) |
+| Published npm CLI (`mnemai-memory`) | **Live:** [`@mnemai/memory-server`](https://www.npmjs.com/package/@mnemai/memory-server) on npm (public); pack verified in CI; see [RELEASING.md](RELEASING.md) for maintainer publish flow |
 
 ## Install & run
 
-### From npm (Memory — after publish)
+### From npm (Memory — published)
 
-Once **`@mnemai/memory-server` is on the npm registry** (see [RELEASING.md](RELEASING.md)):
+**[`@mnemai/memory-server`](https://www.npmjs.com/package/@mnemai/memory-server)** is on the public npm registry (install the current `latest` tag on the package page). Maintainer notes: [RELEASING.md](RELEASING.md).
 
 ```bash
 npx --yes @mnemai/memory-server
